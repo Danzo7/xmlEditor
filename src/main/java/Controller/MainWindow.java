@@ -8,12 +8,16 @@ import javafx.scene.layout.Pane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import static launcher.Main.*;
 import static model.xmlFilePlaceholder.placeHolder;
 import static model.xmlPatterns.computeHighlighting;
+import static model.xmlValidator.dtdValidation;
 
 public class MainWindow implements Initializable {
     public AnchorPane codeArea;
@@ -45,10 +49,14 @@ public class MainWindow implements Initializable {
 
 
 
+
     public void saveDocument(ActionEvent actionEvent) {
+
     }
 
     public void openDocument(ActionEvent actionEvent) {
+        File selectedFile = fileChooser.showOpenDialog(mainStage);
+
     }
 
     public void newDocument(ActionEvent actionEvent) {

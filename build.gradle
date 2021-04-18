@@ -28,6 +28,9 @@ dependencies {
     //compile 'com.github.jiconfont:jiconfont-javafx:1.0.0'
     //implementation 'org.controlsfx:controlsfx:11.0.1'
 
+    // https://mvnrepository.com/artifact/org.jdom/jdom2
+    implementation group: 'org.jdom', name: 'jdom2', version: '2.0.6'
+
     //used
     compile 'com.jfoenix:jfoenix:9.0.8'
     compile group: 'org.apache.ant', name: 'ant-compress', version: '1.5'
