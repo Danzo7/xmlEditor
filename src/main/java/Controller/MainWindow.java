@@ -29,11 +29,11 @@ public class MainWindow implements Initializable {
     CodeArea codeArea;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-generateCodeArea(xmlArea);
+generateCodeArea(xmlArea,placeHolder);
     }
 
 
-    void generateCodeArea(Pane container) {
+    void generateCodeArea(Pane container,String content) {
         codeArea = new CodeArea();
         codeArea.prefWidthProperty().bind(container.widthProperty());
         codeArea.prefHeightProperty().bind(container.heightProperty());
@@ -44,7 +44,7 @@ generateCodeArea(xmlArea);
             codeArea.setStyleSpans(0, computeHighlighting(newText));
         });
         //  codeArea.replaceText(0, 0, this.xml.content);
-          codeArea.replaceText(0, 0, placeHolder);
+          codeArea.replaceText(0, 0, content);
         container.getChildren().setAll(codeArea);
        sizeChanged.onReceive((event)->{
            codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -57,7 +57,6 @@ generateCodeArea(xmlArea);
 
 
     public void saveDocument(ActionEvent actionEvent) throws IOException {
-        System.out.println(codeArea.getText().getBytes());
         if(xml!=null)
             Files.write(Path.of(xml.name),codeArea.getText().getBytes());
     }
@@ -65,7 +64,7 @@ generateCodeArea(xmlArea);
     public void openDocument(ActionEvent actionEvent) throws IOException {
         String selectedFile = fileChooser.showOpenDialog(mainStage).getAbsolutePath();
         xml=new XMLWorker(selectedFile);
-        generateCodeArea(xmlArea);
+        generateCodeArea(xmlArea,xml.content);
 
     }
 
