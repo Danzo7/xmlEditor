@@ -11,7 +11,6 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
-import model.popUpWindow;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package model;
+package model.components;
 
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.InvalidationListener;

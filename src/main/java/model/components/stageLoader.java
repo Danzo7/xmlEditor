@@ -1,6 +1,6 @@
-package model;
+package model.components;
 
-import dr.async;
+import launcher.async;
 import javafx.beans.InvalidationListener;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,7 +13,7 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
-import static dr.FinalsVal.APP_ICON;
+import static launcher.FinalsVal.APP_ICON;
 
 public class stageLoader {
    private Parent root=null;

@@ -57,4 +57,4 @@ run {
                 '--add-exports=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED',
         ]    }
 }
-mainClassName = 'dr.Launcher'
+mainClassName = 'launcher.Launcher'

@@ -32,7 +32,7 @@
                <Insets right="10.0" />
             </padding>
          </HBox>
-         <ProgressIndicator fx:id="progress" layoutX="310.0" layoutY="30.0" progress="0.0" stylesheets="@../../CSS/progress.css" visible="false" />
+         <ProgressIndicator fx:id="progress" layoutX="310.0" layoutY="30.0" progress="0.0" stylesheets="@../../styles/progress.css" visible="false" />
          <ImageView fx:id="icon" fitHeight="33.0" fitWidth="37.0" layoutX="347.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" />
       </children>
    </Pane>

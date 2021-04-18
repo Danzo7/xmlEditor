@@ -1,4 +1,4 @@
-package dr;
+package launcher;
 
 import Controller.loading;
 import javafx.application.Platform;
@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import static dr.FinalsVal.APP_ICON;
+import static launcher.FinalsVal.APP_ICON;
 
 public class preLoader extends Preloader {
 

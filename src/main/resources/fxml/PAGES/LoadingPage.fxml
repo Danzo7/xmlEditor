@@ -8,7 +8,7 @@
    <children>
       <ImageView fitHeight="350.0" fitWidth="601.0" pickOnBounds="true" preserveRatio="true">
           <image>
-              <Image url="@../../image/loading.png" />
+              <Image url="@../../images/loading.png" />
           </image>
       </ImageView>
       <JFXSpinner fx:id="spinner" layoutX="35.0" layoutY="199.0" prefWidth="200.0" progress="0" radius="100.0" startingAngle="0.0" />

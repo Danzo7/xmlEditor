@@ -1,4 +1,4 @@
-package dr;
+package launcher;
 
 import com.sun.javafx.application.LauncherImpl;
 
