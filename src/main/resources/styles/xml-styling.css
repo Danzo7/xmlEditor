@@ -4,6 +4,13 @@
 .normal{
     -fx-fill:green;
 }
+.code-area .label {
+-fx-background-color:#121212;
+-fx-text-fill:white;
+-fx-text-alignment: center;
+-fx-alignment:center;
+}
+
 .tagmark {
     -fx-fill: gray;
 }
@@ -24,4 +31,6 @@
 .comment {
     -fx-fill: teal;
 }
+
+
 

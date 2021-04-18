@@ -41,6 +41,8 @@ generateCodeArea(xmlArea,placeHolder);
         codeArea = new CodeArea();
         codeArea.prefWidthProperty().bind(container.widthProperty());
         codeArea.prefHeightProperty().bind(container.heightProperty());
+        codeArea.setStyle("-fx-background-color:#121212");
+
 
 
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
