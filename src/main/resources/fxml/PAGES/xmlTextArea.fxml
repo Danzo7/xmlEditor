@@ -89,6 +89,6 @@
             </Menu>
          </menus>
       </MenuBar>
-      <AnchorPane fx:id="codeArea" layoutY="31.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="472.0" prefWidth="851.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0" />
+      <AnchorPane fx:id="xmlArea" layoutY="31.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="472.0" prefWidth="851.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0" />
    </children>
 </AnchorPane>
