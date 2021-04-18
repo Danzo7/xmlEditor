@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<AnchorPane minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.XmlEditor">
+<Pane id="container" fx:id="container" prefHeight="400" prefWidth="600">
+
+</Pane>
+</AnchorPane>
