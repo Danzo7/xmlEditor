@@ -30,6 +30,10 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.jdom/jdom2
     implementation group: 'org.jdom', name: 'jdom2', version: '2.0.6'
+// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+// https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
 
     //used
     compile 'com.jfoenix:jfoenix:9.0.8'
