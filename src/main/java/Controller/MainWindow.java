@@ -29,7 +29,7 @@ public class MainWindow implements Initializable {
     CodeArea codeArea;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+generateCodeArea(xmlArea);
     }
 
 
@@ -43,7 +43,8 @@ public class MainWindow implements Initializable {
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
             codeArea.setStyleSpans(0, computeHighlighting(newText));
         });
-        codeArea.replaceText(0, 0, this.xml.content);
+        //  codeArea.replaceText(0, 0, this.xml.content);
+          codeArea.replaceText(0, 0, placeHolder);
         container.getChildren().setAll(codeArea);
        sizeChanged.onReceive((event)->{
            codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));

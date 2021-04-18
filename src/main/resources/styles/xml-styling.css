@@ -1,6 +1,8 @@
 .code-area .paragraph-box .text {
     -fx-font-size: 15px;
-
+}
+.normal{
+    -fx-fill:green;
 }
 .tagmark {
     -fx-fill: gray;

@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class xmlPatterns {
-
+//public static final Pattern data=Pattern.compile("(?<=(<[^<>]*)(>)).*(?=(<\\/[^<>]*>))");
     private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENT>(</?\\h*)(\\w+)([^<>]*)(\\h*/?>))"
             +"|(?<COMMENT><!--[^<>]+-->)");
 
@@ -61,6 +61,10 @@ public class xmlPatterns {
                     lastKwEnd = matcher.end(GROUP_ATTRIBUTES_SECTION);
 
                     spansBuilder.add(Collections.singleton("tagmark"), matcher.end(GROUP_CLOSE_BRACKET) - lastKwEnd);
+                }
+                else {
+                    System.out.println("normal");
+                    spansBuilder.add(Collections.singleton("normal"), matcher.end() - matcher.start());
                 }
             }
             lastKwEnd = matcher.end();
