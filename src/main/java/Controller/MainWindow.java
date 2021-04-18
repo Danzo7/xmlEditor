@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static launcher.Main.*;
@@ -25,8 +27,10 @@ import static model.xmlValidator.dtdValidation;
 
 public class MainWindow implements Initializable {
     public AnchorPane xmlArea;
-    XMLWorker xml=null;
+    ArrayList<XMLWorker> xml=null;
     CodeArea codeArea;
+    int CURRENT_TAB=-1;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 generateCodeArea(xmlArea,placeHolder);
@@ -58,13 +62,14 @@ generateCodeArea(xmlArea,placeHolder);
 
     public void saveDocument(ActionEvent actionEvent) throws IOException {
         if(xml!=null)
-            Files.write(Path.of(xml.name),codeArea.getText().getBytes());
+            Files.write(Path.of(xml.get(CURRENT_TAB).name),codeArea.getText().getBytes());
     }
 
     public void openDocument(ActionEvent actionEvent) throws IOException {
         String selectedFile = fileChooser.showOpenDialog(mainStage).getAbsolutePath();
-        xml=new XMLWorker(selectedFile);
-        generateCodeArea(xmlArea,xml.content);
+        xml.add(new XMLWorker(selectedFile));
+        CURRENT_TAB++;
+        generateCodeArea(xmlArea,xml.get(CURRENT_TAB).content);
 
     }
 
