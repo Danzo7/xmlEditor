@@ -1,7 +1,9 @@
 package Controller;
 
+import com.jfoenix.controls.JFXTabPane;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -26,13 +28,16 @@ import static model.xmlPatterns.computeHighlighting;
 import static model.xmlValidator.dtdValidation;
 
 public class MainWindow implements Initializable {
-    public AnchorPane xmlArea;
+
+    public JFXTabPane tabpane;
     ArrayList<XMLWorker> xml=null;
+    @FXML
     CodeArea codeArea;
     int CURRENT_TAB=-1;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
 generateCodeArea(xmlArea,placeHolder);
     }
 

@@ -31,6 +31,8 @@
 .comment {
     -fx-fill: teal;
 }
-
+.jfx-tab-pane .depth-container .tab-header-area .tab-header-background {
+-fx-background-color: #121212 ;
+}
 
 
