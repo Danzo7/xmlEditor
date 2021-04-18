@@ -1,3 +1,7 @@
+.code-area .paragraph-box .text {
+    -fx-font-size: 15px;
+
+}
 .tagmark {
     -fx-fill: gray;
 }
@@ -9,12 +13,13 @@
     -fx-font-weight: bold;
 }
 .attribute {
-    -fx-fill: darkviolet;
+    -fx-fill: blue;
 }
 .avalue {
-    -fx-fill: black;
+    -fx-fill: green;
 }
 
 .comment {
     -fx-fill: teal;
 }
+

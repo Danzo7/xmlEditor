@@ -26,22 +26,28 @@ public class MainWindow implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         generateCodeArea(codeArea);
+
     }
 
 
     static void generateCodeArea(Pane container) {
         CodeArea codeArea = new CodeArea();
-        codeArea.setPrefWidth(container.getWidth());
-        codeArea.setPrefHeight(container.getHeight());
+         codeArea.setPrefWidth(container.getPrefWidth());
+        codeArea.setPrefHeight(container.getPrefHeight());
+        codeArea.setMaxWidth(container.getMaxWidth());
+        codeArea.setMaxHeight(container.getMaxHeight());
+        codeArea.prefWidthProperty().bind(container.widthProperty());
+        codeArea.prefHeightProperty().bind(container.heightProperty());
+
+
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
             codeArea.setStyleSpans(0, computeHighlighting(newText));
         });
         codeArea.replaceText(0, 0, placeHolder);
         container.getChildren().setAll(codeArea);
-        sizeChanged.onReceive((event)->{
-            codeArea.setPrefWidth(WIDTH);
-            codeArea.setPrefHeight(HEIGHT);
+       sizeChanged.onReceive((event)->{
+           codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         });
     }
 
