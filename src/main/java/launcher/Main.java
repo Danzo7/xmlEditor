@@ -44,6 +44,7 @@ public void init() throws IOException {
         primaryStage.setScene(scene);
         mainStage=primaryStage;
         primaryStage.show();
+     ;
 //
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->
                 setSize( primaryStage.getWidth() , primaryStage.getHeight());

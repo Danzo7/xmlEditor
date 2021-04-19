@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 
 public class XMLWorker {
     public static int TYPE_XSD=1,TYPE_DTD=0;
-    public ArrayList<String> errorTags=new ArrayList<>();
     public String errorTag="thisIsAWayToPreventSomethingDontAskQuestionsOk",errorAttr="thisIsAWayToPreventSomethingDontAskQuestionsOk";
     public int lineError=-1;
     public String name,content;
@@ -64,7 +63,7 @@ public class XMLWorker {
     public  StyleSpans<Collection<String>> computeHighlighting2(String text) throws IOException {
         validate(2);
         Pattern ATTRIBUTES  = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
-        Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+errorTag+"))|(?<ERRORATTR>("+errorAttr+")*\\s*=\\s*\"\\w*\")|(?<STAG>(?<=<)\\w*)|(?<ETAG>(?<=</)\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*\\s*=\\s*\"\\w*\")|(?<BRACKET>[<,>])");
+        Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+errorTag+"))|(?<ERRORATTR>(?<="+errorAttr+")=.*?(?=>))|(?<STAG>(?<=<)\\w*)|(?<ETAG>(?<=</)\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*\\s*=\\s*\"\\w*\")|(?<BRACKET>[<,>])");
         int GROUP_ATTRIBUTE_NAME = 1;
         int GROUP_EQUAL_SYMBOL = 2;
         int GROUP_ATTRIBUTE_VALUE = 3;

@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXTabPane;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -38,12 +39,13 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
     System.out.println(CURRENT_TAB);
     System.err.println("changed");
 });
-
+TabContainer.prefWidthProperty().addListener((observable, oldValue, newValue) -> System.out.println(newValue));
     }
 
 
     void generateCodeArea(Pane container,String content) {
         CodeArea codeArea = new CodeArea();
+
         codeArea.prefWidthProperty().bind(container.widthProperty());
         codeArea.prefHeightProperty().bind(container.heightProperty());
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -55,20 +57,11 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            try {
-                codeArea.setStyleSpans(0, xml.get(CURRENT_TAB).computeHighlighting2(newText));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
         });
-          codeArea.replaceText(0, 0, content);
+        codeArea.replaceText(0, 0, content);
         container.getChildren().setAll(codeArea);
        sizeChanged.onReceive((event)->{
-           tabpane.setPrefWidth(WIDTH);
-           tabpane.setPrefHeight(HEIGHT);
-           codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+
 
         });
        codeAreas.add(codeArea);
