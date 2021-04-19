@@ -14,23 +14,33 @@
 -fx-text-alignment: center;
 -fx-alignment:center;
 }
-.code-area .paragraph-box .tagmark {
+.code-area .paragraph-box .equal {
     -fx-fill: gray;
 }
-.code-area .paragraph-box .anytag {
+
+.code-area .paragraph-box .start-tag {
     -fx-fill: crimson;
 }
-.code-area .paragraph-box .paren {
-    -fx-fill: firebrick;
-    -fx-font-weight: bold;
+.code-area .paragraph-box .end-tag {
+    -fx-fill: #ff6883;
 }
+.code-area .paragraph-box .data {
+     -fx-fill: #d7d1d1;
+ }
+.code-area .paragraph-box .bracket {
+    -fx-fill: #ffac1c;
+}
+
 .code-area .paragraph-box .attribute {
     -fx-fill: blue;
 }
-.code-area .paragraph-box .avalue {
+.code-area .paragraph-box .att_value {
     -fx-fill: green;
 }
-
+.code-area .paragraph-box .error {
+    -fx-fill: #f051ff;
+    -fx-underline: true;
+}
 .comment {
     -fx-fill: teal;
 }

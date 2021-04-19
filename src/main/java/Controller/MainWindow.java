@@ -4,30 +4,22 @@ import com.jfoenix.controls.JFXTabPane;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import model.XMLWorker;
-import org.apache.ant.compress.taskdefs.Ar;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import static launcher.Main.*;
-import static model.xmlFilePlaceholder.placeHolder;
-import static model.xmlPatterns.computeHighlighting;
-import static model.xmlValidator.dtdValidation;
+import static model.XMLWorker.computeHighlighting2;
 
 public class MainWindow implements Initializable {
 
@@ -44,6 +36,11 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
     System.err.println("changed");
 
 });
+        try {
+            openDocument(null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -53,7 +50,14 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
         codeArea.prefHeightProperty().bind(container.heightProperty());
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
-            codeArea.setStyleSpans(0, computeHighlighting(newText));
+
+            codeArea.setStyleSpans(0, computeHighlighting2(newText));
+            xml.get(CURRENT_TAB).content=codeArea.getText();
+            try {
+                System.out.println(xml.get(CURRENT_TAB).validate(2));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
           codeArea.replaceText(0, 0, content);
         container.getChildren().setAll(codeArea);
@@ -69,12 +73,17 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
 
 
     public void saveDocument(ActionEvent actionEvent) throws IOException {
-        if(xml!=null)
+        if(xml.size()>0)
             Files.write(Path.of(xml.get(CURRENT_TAB).name), codeAreas.get(CURRENT_TAB).getText().getBytes());
     }
 
     public void openDocument(ActionEvent actionEvent) throws IOException {
-        String selectedFile = fileChooser.showOpenDialog(mainStage).getAbsolutePath();
+        String selectedFile;
+        if(actionEvent==null)
+            selectedFile = "C:\\Users\\aymen\\OneDrive\\Desktop\\xmlfile.xml";
+        else
+         selectedFile = fileChooser.showOpenDialog(mainStage).getAbsolutePath();
+
         xml.add(new XMLWorker(selectedFile));
         Tab tab = new Tab();
         tab.setText(xml.get(xml.size()-1).name);
@@ -86,7 +95,9 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
     }
 
     public void newDocument(ActionEvent actionEvent) throws IOException {
-        System.out.println(xml.get(CURRENT_TAB).validate(0));
+        //saveDocument(null);
+        if(xml.size()>0)
+            System.out.println(xml.get(CURRENT_TAB).validate(2));
     }
 
     public void saveAsDocument(ActionEvent actionEvent) throws IOException {
