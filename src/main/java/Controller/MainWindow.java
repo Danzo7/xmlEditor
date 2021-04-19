@@ -31,9 +31,8 @@ public class MainWindow implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        System.out.println(TabContainer.getWidth()+" and "+TabContainer.getHeight());
 
-        tabpane.prefHeightProperty().bind(TabContainer.heightProperty());
-        tabpane.prefWidthProperty().bind(TabContainer.widthProperty());
 tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
    CURRENT_TAB= (int) newValue;
     System.out.println(CURRENT_TAB);
@@ -62,7 +61,10 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
           codeArea.replaceText(0, 0, content);
         container.getChildren().setAll(codeArea);
        sizeChanged.onReceive((event)->{
+           tabpane.setPrefWidth(WIDTH);
+           tabpane.setPrefHeight(HEIGHT);
            codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+
         });
        codeAreas.add(codeArea);
     }
