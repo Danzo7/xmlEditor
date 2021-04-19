@@ -3,7 +3,6 @@ package model;
 import org.apache.commons.io.IOUtils;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.jdom2.DocType;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -23,7 +22,9 @@ import java.util.regex.Pattern;
 
 public class XMLWorker {
     public static int TYPE_XSD=1,TYPE_DTD=0;
-    public ArrayList<HashMap<Integer, String>> resolvedErrors=new ArrayList<>();
+    public ArrayList<String> errorTags=new ArrayList<>();
+    public String errorTag="thisIsAWayToPreventSomethingDontAskQuestionsOk",errorAttr="thisIsAWayToPreventSomethingDontAskQuestionsOk";
+    public int lineError=-1;
     public String name,content;
     InputStream inputs;
     public XMLWorker(String name) throws IOException {
@@ -32,7 +33,6 @@ public class XMLWorker {
         content = IOUtils.toString(inputs, StandardCharsets.UTF_8);
     }
     public boolean validate(int Type) throws IOException {
-        //inputs=new FileInputStream(name);
         File tempXmlFile = File.createTempFile("xmlEditor-", ".xml");
         tempXmlFile.deleteOnExit();
         FileWriter myWriter = new FileWriter(tempXmlFile);
@@ -50,12 +50,10 @@ public class XMLWorker {
             Document validDocument = builder.build(tempXmlFile);
 
             XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
-            //output.output(validDocument, System.out);
+        errorTag="thisIsAWayToPreventSomethingDontAskQuestionsOk";
         } catch (JDOMException | IOException e) {
-
             System.out.println(e.getLocalizedMessage());
-            HashMap<Integer, String> res = errorResolver(e.getLocalizedMessage());
-            System.out.println(res.entrySet().iterator().next().getKey());
+            errorResolver(e.getLocalizedMessage());
             return false;
         }
 
@@ -63,9 +61,10 @@ public class XMLWorker {
         return true;
     }
 
-    public static StyleSpans<Collection<String>> computeHighlighting2(String text){
+    public  StyleSpans<Collection<String>> computeHighlighting2(String text) throws IOException {
+        validate(2);
         Pattern ATTRIBUTES  = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
-        Pattern xmlPattern = Pattern.compile("(?<ERROR><note>)|(?<STAG>(?<=<)\\w*)|(?<ETAG>(?<=</)\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*\\s*=\\s*\"\\w*\")|(?<BRACKET>[<,>])");
+        Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+errorTag+"))|(?<ERRORATTR>("+errorAttr+")*\\s*=\\s*\"\\w*\")|(?<STAG>(?<=<)\\w*)|(?<ETAG>(?<=</)\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*\\s*=\\s*\"\\w*\")|(?<BRACKET>[<,>])");
         int GROUP_ATTRIBUTE_NAME = 1;
         int GROUP_EQUAL_SYMBOL = 2;
         int GROUP_ATTRIBUTE_VALUE = 3;
@@ -78,7 +77,8 @@ public class XMLWorker {
         while(matcher.find()) {
             String styleClass =
                     matcher.group("ERROR") != null ? "error" :
-                            matcher.group("BRACKET") != null ? "bracket" :
+                            matcher.group("ERRORATTR") != null ? "error" :
+                             matcher.group("BRACKET") != null ? "bracket" :
                                     matcher.group("ATTR") != null ? "ATTR" :
                                             matcher.group("STAG") != null ? "start-tag" :
                                                     matcher.group("ETAG") != null ? "end-tag" :
@@ -113,22 +113,16 @@ public class XMLWorker {
 
     }
 
-    public static HashMap<Integer, String> errorResolver(String err){
-        Pattern element_reg = Pattern.compile("(?<=(type \")).(?=\")", Pattern.CASE_INSENSITIVE);
+    public  void errorResolver(String err){
+        Pattern element_reg = Pattern.compile("(?<=(type \"))\\w*(?=\")", Pattern.CASE_INSENSITIVE);
         Pattern line_reg = Pattern.compile("(?<=Error on line )[0-9]+(?=:)");
-        Pattern attr_Err = Pattern.compile("(?<=Error on line )[0-9]+(?=:)");
-        int line=-1;
-        String element="null";
+        Pattern attr_Err = Pattern.compile("(?<=(attribute \"))\\w*(?=\")");
         Matcher matcher = element_reg.matcher(err);
-        if(matcher.find())
-            element=matcher.group(0);
+            errorTag=matcher.find()?matcher.group(0):"thisIsAWayToPreventSomethingDontAskQuestionsOk";
+            matcher = line_reg.matcher(err);
+            lineError= matcher.find()?Integer.parseInt(matcher.group(0)):-1;
+            errorAttr=matcher.find()?matcher.group(0):"thisIsAWayToPreventSomethingDontAskQuestionsOk";
 
-        matcher = line_reg.matcher(err);
-        if(matcher.find())
-            line= Integer.parseInt(matcher.group(0));
-        HashMap<Integer, String> result = new HashMap<>();
-        result.put(line,element);
-        return result;
     }
 
 }

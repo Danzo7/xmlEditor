@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import static launcher.Main.*;
-import static model.XMLWorker.computeHighlighting2;
 
 public class MainWindow implements Initializable {
 
@@ -31,13 +30,13 @@ public class MainWindow implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        try {             openDocument(null);         } catch (IOException e) {             e.printStackTrace();         }
         System.out.println(TabContainer.getWidth()+" and "+TabContainer.getHeight());
 
 tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
    CURRENT_TAB= (int) newValue;
     System.out.println(CURRENT_TAB);
     System.err.println("changed");
-
 });
 
     }
@@ -49,14 +48,20 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
         codeArea.prefHeightProperty().bind(container.heightProperty());
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
-
-            codeArea.setStyleSpans(0, computeHighlighting2(newText));
             xml.get(CURRENT_TAB).content=codeArea.getText();
+
             try {
-                System.out.println(xml.get(CURRENT_TAB).validate(2));
+                codeArea.setStyleSpans(0, xml.get(CURRENT_TAB).computeHighlighting2(newText));
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            try {
+                codeArea.setStyleSpans(0, xml.get(CURRENT_TAB).computeHighlighting2(newText));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         });
           codeArea.replaceText(0, 0, content);
         container.getChildren().setAll(codeArea);
