@@ -3,11 +3,13 @@ package Controller;
 import com.jfoenix.controls.JFXTabPane;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import model.XMLWorker;
+import org.apache.ant.compress.taskdefs.Ar;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
@@ -30,36 +32,35 @@ import static model.xmlValidator.dtdValidation;
 public class MainWindow implements Initializable {
 
     public JFXTabPane tabpane;
-    ArrayList<XMLWorker> xml=null;
-    @FXML
-    CodeArea codeArea;
-    int CURRENT_TAB=-1;
+    ArrayList<XMLWorker> xml=new ArrayList<>();
+    ArrayList<CodeArea> codeAreas=new ArrayList<>();
+    int CURRENT_TAB=0;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+   CURRENT_TAB= (int) newValue;
+    System.out.println(CURRENT_TAB);
+    System.err.println("changed");
 
-generateCodeArea(xmlArea,placeHolder);
+});
     }
 
 
     void generateCodeArea(Pane container,String content) {
-        codeArea = new CodeArea();
+        CodeArea codeArea = new CodeArea();
         codeArea.prefWidthProperty().bind(container.widthProperty());
         codeArea.prefHeightProperty().bind(container.heightProperty());
-        codeArea.setStyle("-fx-background-color:#121212");
-
-
-
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
             codeArea.setStyleSpans(0, computeHighlighting(newText));
         });
-        //  codeArea.replaceText(0, 0, this.xml.content);
           codeArea.replaceText(0, 0, content);
         container.getChildren().setAll(codeArea);
        sizeChanged.onReceive((event)->{
            codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         });
+       codeAreas.add(codeArea);
     }
 
 
@@ -69,14 +70,18 @@ generateCodeArea(xmlArea,placeHolder);
 
     public void saveDocument(ActionEvent actionEvent) throws IOException {
         if(xml!=null)
-            Files.write(Path.of(xml.get(CURRENT_TAB).name),codeArea.getText().getBytes());
+            Files.write(Path.of(xml.get(CURRENT_TAB).name), codeAreas.get(CURRENT_TAB).getText().getBytes());
     }
 
     public void openDocument(ActionEvent actionEvent) throws IOException {
         String selectedFile = fileChooser.showOpenDialog(mainStage).getAbsolutePath();
         xml.add(new XMLWorker(selectedFile));
-        CURRENT_TAB++;
-        generateCodeArea(xmlArea,xml.get(CURRENT_TAB).content);
+        Tab tab = new Tab();
+        tab.setText(xml.get(xml.size()-1).name);
+        tab.setContent(new AnchorPane());
+        tabpane.getTabs().add(tab);
+        tabpane.getSelectionModel().select(tab);
+        generateCodeArea((Pane) tabpane.getTabs().get(xml.size()-1).getContent(),xml.get(xml.size()-1).content);
 
     }
 

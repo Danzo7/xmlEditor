@@ -1,30 +1,32 @@
 .code-area .paragraph-box .text {
     -fx-font-size: 15px;
+    -fx-fill: white;
+
 }
-.normal{
-    -fx-fill:green;
+.code-area .paragraph-box{
+    -fx-background-color:#121212;
 }
+
 .code-area .label {
 -fx-background-color:#121212;
 -fx-text-fill:white;
 -fx-text-alignment: center;
 -fx-alignment:center;
 }
-
-.tagmark {
+.code-area .paragraph-box .tagmark {
     -fx-fill: gray;
 }
-.anytag {
+.code-area .paragraph-box .anytag {
     -fx-fill: crimson;
 }
-.paren {
+.code-area .paragraph-box .paren {
     -fx-fill: firebrick;
     -fx-font-weight: bold;
 }
-.attribute {
+.code-area .paragraph-box .attribute {
     -fx-fill: blue;
 }
-.avalue {
+.code-area .paragraph-box .avalue {
     -fx-fill: green;
 }
 
