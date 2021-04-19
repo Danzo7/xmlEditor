@@ -86,7 +86,7 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
     }
 
     public void newDocument(ActionEvent actionEvent) throws IOException {
-
+        System.out.println(xml.get(CURRENT_TAB).validate(0));
     }
 
     public void saveAsDocument(ActionEvent actionEvent) throws IOException {

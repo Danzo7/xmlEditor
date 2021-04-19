@@ -18,11 +18,6 @@ public class xmlValidator {
         try {
             validDocument = builder.build(data);
 
-            XMLOutputter outputter = new XMLOutputter(
-                    Format.getPrettyFormat());
-            outputter.output(validDocument, System.out);
-
-
             DocType docType = validDocument.getDocType();
             System.out.println("Public ID: " + docType.getPublicID());
             System.out.println("System ID: " + docType.getSystemID());

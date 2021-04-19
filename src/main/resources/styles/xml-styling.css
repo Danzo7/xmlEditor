@@ -5,6 +5,7 @@
 }
 .code-area .paragraph-box{
     -fx-background-color:#121212;
+    -fx-font-family: "Fira Code SemiBold";
 }
 
 .code-area .label {
