@@ -24,23 +24,23 @@ import static model.XMLWorker.computeHighlighting2;
 public class MainWindow implements Initializable {
 
     public JFXTabPane tabpane;
+    public AnchorPane TabContainer;
     ArrayList<XMLWorker> xml=new ArrayList<>();
     ArrayList<CodeArea> codeAreas=new ArrayList<>();
     int CURRENT_TAB=0;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        tabpane.prefHeightProperty().bind(TabContainer.heightProperty());
+        tabpane.prefWidthProperty().bind(TabContainer.widthProperty());
 tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
    CURRENT_TAB= (int) newValue;
     System.out.println(CURRENT_TAB);
     System.err.println("changed");
 
 });
-        try {
-            openDocument(null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
 
@@ -87,7 +87,8 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
         xml.add(new XMLWorker(selectedFile));
         Tab tab = new Tab();
         tab.setText(xml.get(xml.size()-1).name);
-        tab.setContent(new AnchorPane());
+        AnchorPane p =new AnchorPane();
+        tab.setContent(p);
         tabpane.getTabs().add(tab);
         tabpane.getSelectionModel().select(tab);
         generateCodeArea((Pane) tabpane.getTabs().get(xml.size()-1).getContent(),xml.get(xml.size()-1).content);
