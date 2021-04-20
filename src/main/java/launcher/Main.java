@@ -8,13 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-
-import static model.xmlValidator.dtdValidation;
 
 
 public class Main extends Application {

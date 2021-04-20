@@ -26,6 +26,7 @@ public class XMLWorker {
     boolean wellFormed=true,valid=true;
     public String name,content,errorString;
     public String errorMessages[]=new String[2];
+    public String infoString="";
     InputStream inputs;
     public XMLWorker(String name) throws IOException {
         this.name=name;
@@ -168,7 +169,8 @@ public class XMLWorker {
         Pattern attr_Err = Pattern.compile("(?<=((Attribute name) \"))\\w*(?=\")");
 
         Matcher matcher=null;
-        errorString=(errorMessages[1].equals("null") ?errorFormat(errorMessages[0]):errorFormat(errorMessages[1]))+"\nWell formed : "+(wellFormed?"OK":"NO")+"            valid : "+(valid?"OK":"NO");
+        errorString=(errorMessages[1].equals("null") ?errorFormat(errorMessages[0]):errorFormat(errorMessages[1]));
+        infoString="F: "+(wellFormed?"OK":"NO")+" V: "+(valid?"OK":"NO");
         System.out.println(errorMessages[0]);
         if(!wellFormed){
              matcher = element_reg.matcher(errorMessages[0]);

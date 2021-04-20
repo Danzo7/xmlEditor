@@ -27,6 +27,7 @@ public class MainWindow implements Initializable {
     public JFXTabPane tabpane;
     public AnchorPane TabContainer;
     public Label Indicator;
+    public Label information;
     ArrayList<XMLWorker> xml=new ArrayList<>();
     ArrayList<CodeArea> codeAreas=new ArrayList<>();
     int CURRENT_TAB=0;
@@ -40,8 +41,7 @@ public class MainWindow implements Initializable {
 
 tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
    CURRENT_TAB= (int) newValue;
-    System.out.println(CURRENT_TAB);
-    System.err.println("changed");
+    information.setText(xml.get(CURRENT_TAB).infoString);
     Indicator.setText(xml.get(CURRENT_TAB).errorString);
 
 });
@@ -60,11 +60,15 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
                 e.printStackTrace();
             }
             Indicator.setText(xml.get(CURRENT_TAB).errorString);
+            information.setText(xml.get(CURRENT_TAB).infoString);
+
 
         });
         codeArea.replaceText(0, 0, content);
 
             Indicator.setText(xml.get(CURRENT_TAB).errorString);
+        information.setText(xml.get(CURRENT_TAB).infoString);
+
 
         container.setCenter(codeArea);
 
