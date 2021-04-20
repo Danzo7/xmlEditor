@@ -1,16 +1,14 @@
 package Controller;
 
 import com.jfoenix.controls.JFXTabPane;
+import com.madeorsk.emojisfx.EmojisLabel;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.Initializable;
-import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.stage.Window;
 import model.XMLWorker;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -37,13 +35,15 @@ public class MainWindow implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         TabContainer.setStyle("-fx-background-color:#212121;");
         Indicator.setText("Please Open a XML file : ");
-      /*  try {             openDocument(null);} catch (IOException e) {             e.printStackTrace();         }*/
+        try {             openDocument(null);} catch (IOException e) {             e.printStackTrace();         }
         System.out.println(TabContainer.getWidth()+" and "+TabContainer.getHeight());
 
 tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
    CURRENT_TAB= (int) newValue;
     System.out.println(CURRENT_TAB);
     System.err.println("changed");
+    Indicator.setText(xml.get(CURRENT_TAB).errorString);
+
 });
 
     }
@@ -53,16 +53,21 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
         CodeArea codeArea = new CodeArea();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
-
             xml.get(CURRENT_TAB).content=codeArea.getText();
             try {
                 codeArea.setStyleSpans(0, xml.get(CURRENT_TAB).computeHighlighting2(newText));
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            Indicator.setText(xml.get(CURRENT_TAB).errorString);
+
         });
         codeArea.replaceText(0, 0, content);
+
+            Indicator.setText(xml.get(CURRENT_TAB).errorString);
+
         container.setCenter(codeArea);
+
        sizeChanged.onReceive((event)->{
 
 

@@ -12,26 +12,41 @@ import org.jdom2.output.XMLOutputter;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 public class XMLWorker {
-    public static int TYPE_XSD=1,TYPE_DTD=0;
+    public static int TYPE_XSD=1,TYPE_DTD=0,TYPE_AUTO=3;
     static String skips="([\\s\\n\\r])*";
-    static String errorResolve="";
-    public String errorTag="thisIsAWayToPreventSomethingDontAskQuestionsOk",errorAttr="thisIsAWayToPreventSomethingDontAskQuestionsOk",errorTagValidate="thisIsAWayToPreventSomethingDontAskQuestionsOk";
-    public int lineError=-1;
+    public String unformattedTag ="thisIsAWayToPreventSomethingDontAskQuestionsOk", unformattedAttribute ="thisIsAWayToPreventSomethingDontAskQuestionsOk", invalidAttribute ="thisIsAWayToPreventSomethingDontAskQuestionsOk", invalidTag ="thisIsAWayToPreventSomethingDontAskQuestionsOk";
+    public int errorLines[]=new int[2];
+    boolean wellFormed=true,valid=true;
     public String name,content,errorString;
+    public String errorMessages[]=new String[2];
     InputStream inputs;
     public XMLWorker(String name) throws IOException {
         this.name=name;
         inputs=new FileInputStream(name);
         content = IOUtils.toString(inputs, StandardCharsets.UTF_8);
+    }
+    void addSyntaxError(String Error){
+        wellFormed=false;
+        errorMessages[0]=Error;
+    }
+    void addValidationError(String Error){
+        valid=false;
+        errorMessages[1]=Error;
+    }
+   void  resetErrorValue(){
+        wellFormed=true;
+        valid=true;
+       unformattedTag =invalidAttribute= unformattedAttribute = invalidTag ="thisIsAWayToPreventSomethingDontAskQuestionsOk";
+       errorLines[0]=-1;errorLines[1]=-1;
+       errorString="Good";
+        errorMessages[0]="wellformed";errorMessages[1]="valid";
     }
     public boolean validate(int Type) throws IOException {
         File tempXmlFile = File.createTempFile("xmlEditor-", ".xml");
@@ -40,49 +55,56 @@ public class XMLWorker {
         myWriter.write(content);
         myWriter.close();
         SAXBuilder builder;
-        if(Type==5)
+        resetErrorValue();
+      if(Type!=TYPE_AUTO) {
+          try {
+              if (Type == TYPE_DTD)
+                  builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
+              else
+                  builder = new SAXBuilder(XMLReaders.XSDVALIDATING);
+              Document validDocument = builder.build(tempXmlFile);
+              XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+          } catch (JDOMException | IOException e) {
+              addValidationError(e.getMessage());
+          }
+      }
+        else{
             builder = new SAXBuilder();
-        else{
-        if(Type==TYPE_DTD)
-         builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
-        else
-            if(Type==TYPE_XSD)
-            builder = new SAXBuilder(XMLReaders.XSDVALIDATING);
-        else{
-            if(content.contains("<!DOCTYPE"))
-            builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
-            else if(content.contains("xsi:schemaLocation"))
-            builder = new SAXBuilder(XMLReaders.XSDVALIDATING);
-        else
-                builder = new SAXBuilder();
-        }
+            try {
+                Document validDocument = builder.build(tempXmlFile);
+                //XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+                System.out.println("here");
+            } catch (JDOMException e) {
+                System.out.println("ehere");
+
+                addSyntaxError(e.getMessage());
+            }
+            try {
+                if (content.contains("<!DOCTYPE"))
+                    builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
+                else if (content.contains("xsi:schemaLocation"))
+                    builder = new SAXBuilder(XMLReaders.XSDVALIDATING);
+                Document validDocument = builder.build(tempXmlFile);
+                //XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+
+            }
+            catch (JDOMException e){
+
+                addValidationError(e.getMessage());
             }
 
-        try {
-            Document validDocument = builder.build(tempXmlFile);
-            XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
-
-        errorTag=errorAttr="thisIsAWayToPreventSomethingDontAskQuestionsOk";
-        lineError=-1;
-        errorString="Good";
-        errorTagValidate="thisIsAWayToPreventSomethingDontAskQuestionsOk";
-        } catch (JDOMException | IOException e) {
-            System.out.println(e.getLocalizedMessage());
-            errorResolver(e.getLocalizedMessage());
-            return false;
         }
-
-
-        return true;
+        errorResolver();
+        return wellFormed || valid;
     }
 
     public  StyleSpans<Collection<String>> computeHighlighting2(String text) throws IOException {
-        validate(2);
+        validate(TYPE_AUTO);
 
 
         Pattern ATTRIBUTES  = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
-        System.out.println("errorDTD"+errorTagValidate);
-        Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+errorTag+"))|(?<ERRORATTR>"+errorAttr+"|"+errorTagValidate+".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
+        System.out.println(invalidAttribute);
+        Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+ unformattedTag +"|"+invalidTag+"))|(?<ERRORATTR>"+ unformattedAttribute +"|"+ invalidAttribute +".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
         int GROUP_ATTRIBUTE_NAME = 1;
         int GROUP_EQUAL_SYMBOL = 2;
         int GROUP_ATTRIBUTE_VALUE = 3;
@@ -131,25 +153,46 @@ public class XMLWorker {
         return spansBuilder.create();
 
     }
+    String errorFormat(String Err){
+        return Err.replaceAll("of document file.*\\.xml","");
+    }
+    public void errorResolver(){
 
-    public  void errorResolver(String err){
-        System.out.println("ERROR; "+err);
-
-        errorString=err;
-            Pattern element_reg = Pattern.compile("(?<=(type \"))\\w*(?=\")", Pattern.CASE_INSENSITIVE);
+        Pattern element_reg = Pattern.compile("(?<=(type \"))\\w*(?=\")", Pattern.CASE_INSENSITIVE);
         Pattern line_reg = Pattern.compile("(?<=Error on line )[0-9]+(?=:)");
-        Pattern tagValid = Pattern.compile(" (?<=(type \"))\\w*(?=\" is incomplete)");
-        Pattern attr_Err = Pattern.compile("(?<=((attribute|Attribute name) \"))\\w*(?=\")");
+        Pattern tagValid = Pattern.compile("((?<=(type \"))\\w*(?=\" is incomplete))|((?<=(type \\\"))\\w*(?=\\\"))");
+        Pattern validAttribute = Pattern.compile("(?<=((Attribute|Attribute name) \"))\\w*(?=\")");
+        Pattern attr_Err = Pattern.compile("(?<=((Attribute name) \"))\\w*(?=\")");
 
-        Matcher matcher = element_reg.matcher(err);
-        errorTag=matcher.find()?matcher.group(0):"thisIsAWayToPreventSomethingDontAskQuestionsOk";
-        matcher = line_reg.matcher(err);
-        lineError= matcher.find()?Integer.parseInt(matcher.group(0)):-1;
-        matcher = attr_Err.matcher(err);
-        errorAttr=matcher.find()?matcher.group(0):"thisIsAWayToPreventSomethingDontAskQuestionsOk";
+        Matcher matcher=null;
+        errorString=(errorMessages[1].equals("null") ?errorFormat(errorMessages[0]):errorFormat(errorMessages[1]))+"\nWell formed : "+(wellFormed?"OK":"NO")+"            valid : "+(valid?"OK":"NO");
+        System.out.println(errorMessages[0]);
+        if(!wellFormed){
+             matcher = element_reg.matcher(errorMessages[0]);
+            unformattedTag =matcher.find()?matcher.group(0): unformattedTag;
+            matcher = attr_Err.matcher(errorMessages[0]);
+            unformattedAttribute =matcher.find()?matcher.group(0):unformattedAttribute;
+            matcher = line_reg.matcher(errorMessages[1]);
+            errorLines[0]= matcher.find()?Integer.parseInt(matcher.group(0)):-1;
 
-        matcher = tagValid.matcher(err);
-        errorTagValidate=matcher.find()?matcher.group(0):"thisIsAWayToPreventSomethingDontAskQuestionsOk";
+        }
+        if(!valid){
+
+            matcher = tagValid.matcher(errorMessages[1]);
+
+            invalidTag =matcher.find()?matcher.group(0): invalidTag;
+            matcher = line_reg.matcher(errorMessages[1]);
+            errorLines[1]= matcher.find()?Integer.parseInt(matcher.group(0)):-1;
+            matcher = validAttribute.matcher(errorMessages[1]);
+            invalidAttribute = matcher.find() ? matcher.group(0) : invalidAttribute;
+
+        }
+
+
+
+
+
+
 
     }
 
