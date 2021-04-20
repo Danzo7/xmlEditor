@@ -4,9 +4,12 @@ import com.jfoenix.controls.JFXTabPane;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Window;
 import model.XMLWorker;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -43,11 +46,10 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
     }
 
 
-    void generateCodeArea(Pane container,String content) {
+    void generateCodeArea(BorderPane container,String content) {
         CodeArea codeArea = new CodeArea();
-        codeArea.prefWidthProperty().bind(container.widthProperty());
-        codeArea.prefHeightProperty().bind(container.heightProperty());
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
 
             codeArea.setStyleSpans(0, computeHighlighting2(newText));
@@ -59,11 +61,10 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
             }
         });
           codeArea.replaceText(0, 0, content);
-        container.getChildren().setAll(codeArea);
+        container.setCenter(codeArea);
        sizeChanged.onReceive((event)->{
-           tabpane.setPrefWidth(WIDTH);
-           tabpane.setPrefHeight(HEIGHT);
-           codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+        //   codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+
 
         });
        codeAreas.add(codeArea);
@@ -89,11 +90,12 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
         xml.add(new XMLWorker(selectedFile));
         Tab tab = new Tab();
         tab.setText(xml.get(xml.size()-1).name);
-        AnchorPane p =new AnchorPane();
+        BorderPane p =new BorderPane();
         tab.setContent(p);
+        p.setStyle("-fx-background-color:red;");
         tabpane.getTabs().add(tab);
         tabpane.getSelectionModel().select(tab);
-        generateCodeArea((Pane) tabpane.getTabs().get(xml.size()-1).getContent(),xml.get(xml.size()-1).content);
+        generateCodeArea((BorderPane) tabpane.getTabs().get(xml.size()-1).getContent(),xml.get(xml.size()-1).content);
 
     }
 
