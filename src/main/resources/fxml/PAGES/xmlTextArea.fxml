@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.input.*?>
-<?import javafx.scene.layout.*?>
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="600.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MainWindow">
    <children>
@@ -88,7 +93,7 @@
             </Menu>
          </menus>
       </MenuBar>
-      <AnchorPane fx:id="TabContainer" layoutY="31.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="541.0" prefWidth="950.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0">
+      <AnchorPane fx:id="TabContainer" layoutY="31.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="552.0" prefWidth="950.0" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0">
          <children>
             <JFXTabPane fx:id="tabpane" prefHeight="571.0" prefWidth="951.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <tabs>
@@ -105,7 +110,7 @@
               <padding>
                  <Insets left="10.0" />
               </padding>
-           </Label> <Label fx:id="information" alignment="BASELINE_RIGHT" contentDisplay="CENTER" layoutY="571.0" style="-fx-background-color: #212121; -fx-font-size: 12px;" text="Label" textAlignment="RIGHT" textFill="WHITE" textOverrun="CLIP" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+           </Label> <Label fx:id="information" layoutY="571.0" prefHeight="17.0" prefWidth="140.0" style="-fx-background-color: #212121; -fx-font-size: 12px;" text="Label" textAlignment="RIGHT" textFill="WHITE" textOverrun="CLIP" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
            <opaqueInsets>
               <Insets />
            </opaqueInsets>

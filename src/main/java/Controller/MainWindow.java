@@ -1,18 +1,22 @@
 package Controller;
 
 import com.jfoenix.controls.JFXTabPane;
-import com.madeorsk.emojisfx.EmojisLabel;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import model.XMLWorker;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -28,6 +32,7 @@ public class MainWindow implements Initializable {
     public AnchorPane TabContainer;
     public Label Indicator;
     public Label information;
+    public MenuItem exitMenuItem;
     ArrayList<XMLWorker> xml=new ArrayList<>();
     ArrayList<CodeArea> codeAreas=new ArrayList<>();
     int CURRENT_TAB=0;
@@ -84,10 +89,7 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
 
 
 
-    public void saveDocument(ActionEvent actionEvent) throws IOException {
-        if(xml.size()>0)
-            Files.write(Path.of(xml.get(CURRENT_TAB).name), codeAreas.get(CURRENT_TAB).getText().getBytes());
-    }
+
 
     public void openDocument(ActionEvent actionEvent) throws IOException {
         String selectedFile;
@@ -112,12 +114,25 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
         if(xml.size()>0)
             System.out.println(xml.get(CURRENT_TAB).validate(2));
     }
+    public void saveDocument(ActionEvent actionEvent) throws IOException {
+        if(xml.size()>0)
+            Files.write(Path.of(xml.get(CURRENT_TAB).name), xml.get(CURRENT_TAB).content.getBytes());
+    }
 
     public void saveAsDocument(ActionEvent actionEvent) throws IOException {
-
+        if(xml.size()>0) {
+            File file = fileChooser.showSaveDialog(mainStage);
+            if (file != null) {
+         /*   FileWriter fileWriter=new FileWriter(file);
+            fileWriter.write(xml.get(CURRENT_TAB).content);
+            fileWriter.close();*/
+                Files.write(Path.of(file.getAbsolutePath()), xml.get(CURRENT_TAB).content.getBytes());
+            }
+        }
     }
 
     public void exitProgram(ActionEvent actionEvent) {
+        Platform.exit();
     }
 
     public void undo(ActionEvent actionEvent) {
