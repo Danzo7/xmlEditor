@@ -22,9 +22,10 @@ import java.util.regex.Pattern;
 
 public class XMLWorker {
     public static int TYPE_XSD=1,TYPE_DTD=0;
+    static String skips="([\\s\\n\\r])*";
     public String errorTag="thisIsAWayToPreventSomethingDontAskQuestionsOk",errorAttr="thisIsAWayToPreventSomethingDontAskQuestionsOk";
     public int lineError=-1;
-    public String name,content;
+    public String name,content,errorString;
     InputStream inputs;
     public XMLWorker(String name) throws IOException {
         this.name=name;
@@ -47,9 +48,10 @@ public class XMLWorker {
             builder = new SAXBuilder();
         try {
             Document validDocument = builder.build(tempXmlFile);
-
             XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
-        errorTag="thisIsAWayToPreventSomethingDontAskQuestionsOk";
+        errorTag=errorAttr="thisIsAWayToPreventSomethingDontAskQuestionsOk";
+        lineError=-1;
+        errorString="Good";
         } catch (JDOMException | IOException e) {
             System.out.println(e.getLocalizedMessage());
             errorResolver(e.getLocalizedMessage());
@@ -63,7 +65,8 @@ public class XMLWorker {
     public  StyleSpans<Collection<String>> computeHighlighting2(String text) throws IOException {
         validate(2);
         Pattern ATTRIBUTES  = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
-        Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+errorTag+"))|(?<ERRORATTR>(?<="+errorAttr+")=.*?(?=>))|(?<STAG>(?<=<)\\w*)|(?<ETAG>(?<=</)\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*\\s*=\\s*\"\\w*\")|(?<BRACKET>[<,>])");
+        Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+errorTag+"))|(?<ERRORATTR>"+errorAttr+".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
+        System.out.println(errorAttr+"--is");
         int GROUP_ATTRIBUTE_NAME = 1;
         int GROUP_EQUAL_SYMBOL = 2;
         int GROUP_ATTRIBUTE_VALUE = 3;
@@ -76,7 +79,8 @@ public class XMLWorker {
         while(matcher.find()) {
             String styleClass =
                     matcher.group("ERROR") != null ? "error" :
-                            matcher.group("ERRORATTR") != null ? "error" :
+                            matcher.group("ERRORATTR") != null ? "error-attr" :
+                                    matcher.group("DECLARATION") != null ? "declaration" :
                              matcher.group("BRACKET") != null ? "bracket" :
                                     matcher.group("ATTR") != null ? "ATTR" :
                                             matcher.group("STAG") != null ? "start-tag" :
@@ -113,14 +117,16 @@ public class XMLWorker {
     }
 
     public  void errorResolver(String err){
+        errorString=err;
         Pattern element_reg = Pattern.compile("(?<=(type \"))\\w*(?=\")", Pattern.CASE_INSENSITIVE);
         Pattern line_reg = Pattern.compile("(?<=Error on line )[0-9]+(?=:)");
-        Pattern attr_Err = Pattern.compile("(?<=(attribute \"))\\w*(?=\")");
+        Pattern attr_Err = Pattern.compile("(?<=((attribute|Attribute name) \"))\\w*(?=\")");
         Matcher matcher = element_reg.matcher(err);
             errorTag=matcher.find()?matcher.group(0):"thisIsAWayToPreventSomethingDontAskQuestionsOk";
             matcher = line_reg.matcher(err);
             lineError= matcher.find()?Integer.parseInt(matcher.group(0)):-1;
-            errorAttr=matcher.find()?matcher.group(0):"thisIsAWayToPreventSomethingDontAskQuestionsOk";
+         matcher = attr_Err.matcher(err);
+        errorAttr=matcher.find()?matcher.group(0):"thisIsAWayToPreventSomethingDontAskQuestionsOk";
 
     }
 

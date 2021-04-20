@@ -33,7 +33,7 @@ public class MainWindow implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {             openDocument(null);         } catch (IOException e) {             e.printStackTrace();         }
+        try {             openDocument(null);} catch (IOException e) {             e.printStackTrace();         }
         System.out.println(TabContainer.getWidth()+" and "+TabContainer.getHeight());
 
 tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
@@ -48,27 +48,18 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
     void generateCodeArea(BorderPane container,String content) {
         CodeArea codeArea = new CodeArea();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
+
             xml.get(CURRENT_TAB).content=codeArea.getText();
-
             try {
                 codeArea.setStyleSpans(0, xml.get(CURRENT_TAB).computeHighlighting2(newText));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            try {
-                codeArea.setStyleSpans(0, xml.get(CURRENT_TAB).computeHighlighting2(newText));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
         });
-          codeArea.replaceText(0, 0, content);
+        codeArea.replaceText(0, 0, content);
         container.setCenter(codeArea);
        sizeChanged.onReceive((event)->{
-        //   codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
 
 
         });
@@ -97,7 +88,6 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
         tab.setText(xml.get(xml.size()-1).name);
         BorderPane p =new BorderPane();
         tab.setContent(p);
-        p.setStyle("-fx-background-color:red;");
         tabpane.getTabs().add(tab);
         tabpane.getSelectionModel().select(tab);
         generateCodeArea((BorderPane) tabpane.getTabs().get(xml.size()-1).getContent(),xml.get(xml.size()-1).content);

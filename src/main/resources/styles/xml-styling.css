@@ -4,8 +4,12 @@
 
 }
 .code-area .paragraph-box{
-    -fx-background-color:#121212;
+    -fx-background-color:#212121;
     -fx-font-family: "Fira Code SemiBold";
+}
+.code-area {
+    -fx-background-color: #1c1c1c;
+
 }
 
 .code-area .label {
@@ -17,12 +21,14 @@
 .code-area .paragraph-box .equal {
     -fx-fill: gray;
 }
-
+.code-area .paragraph-box .declaration {
+    -fx-fill: gray;
+}
 .code-area .paragraph-box .start-tag {
-    -fx-fill: crimson;
+    -fx-fill: ffac1c;
 }
 .code-area .paragraph-box .end-tag {
-    -fx-fill: #ff6883;
+    -fx-fill: #ffac1c;
 }
 .code-area .paragraph-box .data {
      -fx-fill: #d7d1d1;
@@ -32,13 +38,17 @@
 }
 
 .code-area .paragraph-box .attribute {
-    -fx-fill: blue;
+    -fx-fill: #4a1d75;
 }
 .code-area .paragraph-box .att_value {
-    -fx-fill: green;
+    -fx-fill: #054805;
 }
 .code-area .paragraph-box .error {
-    -fx-fill: #f051ff;
+    -fx-fill: #881919;
+    -fx-underline: true;
+}
+.code-area .paragraph-box .error-attr {
+    -fx-fill: #ba3119;
     -fx-underline: true;
 }
 .comment {
