@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -27,13 +28,16 @@ public class MainWindow implements Initializable {
 
     public JFXTabPane tabpane;
     public AnchorPane TabContainer;
+    public Label Indicator;
     ArrayList<XMLWorker> xml=new ArrayList<>();
     ArrayList<CodeArea> codeAreas=new ArrayList<>();
     int CURRENT_TAB=0;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {             openDocument(null);} catch (IOException e) {             e.printStackTrace();         }
+        TabContainer.setStyle("-fx-background-color:#212121;");
+        Indicator.setText("Please Open a XML file : ");
+      /*  try {             openDocument(null);} catch (IOException e) {             e.printStackTrace();         }*/
         System.out.println(TabContainer.getWidth()+" and "+TabContainer.getHeight());
 
 tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
