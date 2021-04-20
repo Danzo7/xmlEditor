@@ -4,10 +4,12 @@ import com.jfoenix.controls.JFXTabPane;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Window;
 import model.XMLWorker;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -39,16 +41,14 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
     System.out.println(CURRENT_TAB);
     System.err.println("changed");
 });
-TabContainer.prefWidthProperty().addListener((observable, oldValue, newValue) -> System.out.println(newValue));
+
     }
 
 
-    void generateCodeArea(Pane container,String content) {
+    void generateCodeArea(BorderPane container,String content) {
         CodeArea codeArea = new CodeArea();
-
-        codeArea.prefWidthProperty().bind(container.widthProperty());
-        codeArea.prefHeightProperty().bind(container.heightProperty());
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
             xml.get(CURRENT_TAB).content=codeArea.getText();
 
@@ -57,10 +57,18 @@ TabContainer.prefWidthProperty().addListener((observable, oldValue, newValue) ->
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            try {
+                codeArea.setStyleSpans(0, xml.get(CURRENT_TAB).computeHighlighting2(newText));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         });
-        codeArea.replaceText(0, 0, content);
-        container.getChildren().setAll(codeArea);
+          codeArea.replaceText(0, 0, content);
+        container.setCenter(codeArea);
        sizeChanged.onReceive((event)->{
+        //   codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
 
 
         });
@@ -87,11 +95,12 @@ TabContainer.prefWidthProperty().addListener((observable, oldValue, newValue) ->
         xml.add(new XMLWorker(selectedFile));
         Tab tab = new Tab();
         tab.setText(xml.get(xml.size()-1).name);
-        AnchorPane p =new AnchorPane();
+        BorderPane p =new BorderPane();
         tab.setContent(p);
+        p.setStyle("-fx-background-color:red;");
         tabpane.getTabs().add(tab);
         tabpane.getSelectionModel().select(tab);
-        generateCodeArea((Pane) tabpane.getTabs().get(xml.size()-1).getContent(),xml.get(xml.size()-1).content);
+        generateCodeArea((BorderPane) tabpane.getTabs().get(xml.size()-1).getContent(),xml.get(xml.size()-1).content);
 
     }
 
