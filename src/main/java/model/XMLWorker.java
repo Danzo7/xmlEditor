@@ -23,7 +23,8 @@ import java.util.regex.Pattern;
 public class XMLWorker {
     public static int TYPE_XSD=1,TYPE_DTD=0;
     static String skips="([\\s\\n\\r])*";
-    public String errorTag="thisIsAWayToPreventSomethingDontAskQuestionsOk",errorAttr="thisIsAWayToPreventSomethingDontAskQuestionsOk";
+    static String errorResolve="";
+    public String errorTag="thisIsAWayToPreventSomethingDontAskQuestionsOk",errorAttr="thisIsAWayToPreventSomethingDontAskQuestionsOk",errorTagValidate="thisIsAWayToPreventSomethingDontAskQuestionsOk";
     public int lineError=-1;
     public String name,content,errorString;
     InputStream inputs;
@@ -39,19 +40,32 @@ public class XMLWorker {
         myWriter.write(content);
         myWriter.close();
         SAXBuilder builder;
+        if(Type==5)
+            builder = new SAXBuilder();
+        else{
         if(Type==TYPE_DTD)
          builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
         else
             if(Type==TYPE_XSD)
             builder = new SAXBuilder(XMLReaders.XSDVALIDATING);
+        else{
+            if(content.contains("<!DOCTYPE"))
+            builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
+            else if(content.contains("xsi:schemaLocation"))
+            builder = new SAXBuilder(XMLReaders.XSDVALIDATING);
         else
-            builder = new SAXBuilder();
+                builder = new SAXBuilder();
+        }
+            }
+
         try {
             Document validDocument = builder.build(tempXmlFile);
             XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+
         errorTag=errorAttr="thisIsAWayToPreventSomethingDontAskQuestionsOk";
         lineError=-1;
         errorString="Good";
+        errorTagValidate="thisIsAWayToPreventSomethingDontAskQuestionsOk";
         } catch (JDOMException | IOException e) {
             System.out.println(e.getLocalizedMessage());
             errorResolver(e.getLocalizedMessage());
@@ -64,9 +78,11 @@ public class XMLWorker {
 
     public  StyleSpans<Collection<String>> computeHighlighting2(String text) throws IOException {
         validate(2);
+
+
         Pattern ATTRIBUTES  = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
-        Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+errorTag+"))|(?<ERRORATTR>"+errorAttr+".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
-        System.out.println(errorAttr+"--is");
+        System.out.println("errorDTD"+errorTagValidate);
+        Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+errorTag+"))|(?<ERRORATTR>"+errorAttr+"|"+errorTagValidate+".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
         int GROUP_ATTRIBUTE_NAME = 1;
         int GROUP_EQUAL_SYMBOL = 2;
         int GROUP_ATTRIBUTE_VALUE = 3;
@@ -81,13 +97,13 @@ public class XMLWorker {
                     matcher.group("ERROR") != null ? "error" :
                             matcher.group("ERRORATTR") != null ? "error-attr" :
                                     matcher.group("DECLARATION") != null ? "declaration" :
-                             matcher.group("BRACKET") != null ? "bracket" :
-                                    matcher.group("ATTR") != null ? "ATTR" :
-                                            matcher.group("STAG") != null ? "start-tag" :
-                                                    matcher.group("ETAG") != null ? "end-tag" :
-                                                            matcher.group("DATA") != null ? "data" :
-                                                                    matcher.group("BRACKET") != null ? "bracket" :
-                                                                            null; /* never happens */ assert styleClass != null;
+                                            matcher.group("BRACKET") != null ? "bracket" :
+                                                    matcher.group("ATTR") != null ? "ATTR" :
+                                                            matcher.group("STAG") != null ? "start-tag" :
+                                                                    matcher.group("ETAG") != null ? "end-tag" :
+                                                                            matcher.group("DATA") != null ? "data" :
+                                                                                    matcher.group("BRACKET") != null ? "bracket" :
+                                                                                            null; /* never happens */ assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
 
             if(styleClass.equals("ATTR")) {
@@ -117,16 +133,23 @@ public class XMLWorker {
     }
 
     public  void errorResolver(String err){
+        System.out.println("ERROR; "+err);
+
         errorString=err;
-        Pattern element_reg = Pattern.compile("(?<=(type \"))\\w*(?=\")", Pattern.CASE_INSENSITIVE);
+            Pattern element_reg = Pattern.compile("(?<=(type \"))\\w*(?=\")", Pattern.CASE_INSENSITIVE);
         Pattern line_reg = Pattern.compile("(?<=Error on line )[0-9]+(?=:)");
+        Pattern tagValid = Pattern.compile(" (?<=(type \"))\\w*(?=\" is incomplete)");
         Pattern attr_Err = Pattern.compile("(?<=((attribute|Attribute name) \"))\\w*(?=\")");
+
         Matcher matcher = element_reg.matcher(err);
-            errorTag=matcher.find()?matcher.group(0):"thisIsAWayToPreventSomethingDontAskQuestionsOk";
-            matcher = line_reg.matcher(err);
-            lineError= matcher.find()?Integer.parseInt(matcher.group(0)):-1;
-         matcher = attr_Err.matcher(err);
+        errorTag=matcher.find()?matcher.group(0):"thisIsAWayToPreventSomethingDontAskQuestionsOk";
+        matcher = line_reg.matcher(err);
+        lineError= matcher.find()?Integer.parseInt(matcher.group(0)):-1;
+        matcher = attr_Err.matcher(err);
         errorAttr=matcher.find()?matcher.group(0):"thisIsAWayToPreventSomethingDontAskQuestionsOk";
+
+        matcher = tagValid.matcher(err);
+        errorTagValidate=matcher.find()?matcher.group(0):"thisIsAWayToPreventSomethingDontAskQuestionsOk";
 
     }
 

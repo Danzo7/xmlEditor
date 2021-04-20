@@ -7,6 +7,9 @@
     -fx-background-color:#212121;
     -fx-font-family: "Fira Code SemiBold";
 }
+.code-area .caret {
+    -fx-stroke: white;
+}
 .code-area {
     -fx-background-color: #1c1c1c;
 
