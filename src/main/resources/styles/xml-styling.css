@@ -24,6 +24,10 @@
 .code-area .paragraph-box .equal {
     -fx-fill: gray;
 }
+.label {
+    -fx-font-family: "Fira Code SemiBold";
+
+}
 .code-area .paragraph-box .declaration {
     -fx-fill: gray;
 }
@@ -46,12 +50,13 @@
 .code-area .paragraph-box .att_value {
     -fx-fill: #054805;
 }
-.code-area .paragraph-box .error {
+.code-area .paragraph-box .error-form {
     -fx-fill: #881919;
     -fx-underline: true;
 }
-.code-area .paragraph-box .error-attr {
-    -fx-fill: #ba3119;
+.code-area .paragraph-box .error-valid {
+    -fx-fill: #ff6347;
+    -fx-background-color: yellow;
     -fx-underline: true;
 }
 .comment {

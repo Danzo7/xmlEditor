@@ -104,7 +104,9 @@ public class XMLWorker {
 
         Pattern ATTRIBUTES  = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
         System.out.println(invalidAttribute);
-        Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+ unformattedTag +"|"+invalidTag+"))|(?<ERRORATTR>"+ unformattedAttribute +"|"+ invalidAttribute +".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
+       // Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+ unformattedTag +"|"+invalidTag+"))|(?<ERRORATTR>"+ unformattedAttribute +"|"+ invalidAttribute +".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
+        Pattern xmlPattern = Pattern.compile("(?<ERRORFORM>(?<=<)"+unformattedTag+"|"+unformattedAttribute+".*?(?=>))|(?<ERRVALID>(?<=<)"+invalidTag+"|"+invalidAttribute+".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
+
         int GROUP_ATTRIBUTE_NAME = 1;
         int GROUP_EQUAL_SYMBOL = 2;
         int GROUP_ATTRIBUTE_VALUE = 3;
@@ -116,8 +118,8 @@ public class XMLWorker {
 
         while(matcher.find()) {
             String styleClass =
-                    matcher.group("ERROR") != null ? "error" :
-                            matcher.group("ERRORATTR") != null ? "error-attr" :
+                    matcher.group("ERRORFORM") != null ? "error-form" :
+                            matcher.group("ERRVALID") != null ? "error-valid" :
                                     matcher.group("DECLARATION") != null ? "declaration" :
                                             matcher.group("BRACKET") != null ? "bracket" :
                                                     matcher.group("ATTR") != null ? "ATTR" :
@@ -154,6 +156,7 @@ public class XMLWorker {
 
     }
     String errorFormat(String Err){
+        System.out.println(Err);
         return Err.replaceAll("of document file.*\\.xml","");
     }
     public void errorResolver(){
