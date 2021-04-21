@@ -48,8 +48,8 @@ tabbedPan.getSelectionModel().selectedIndexProperty().addListener((observable, o
        Indicator.setText(xml.get(CURRENT_TAB).errorString);
    }
    else{
-       Indicator.setText("Choose a file. ");
-    information.setText("IDLE");}
+       Indicator.setText("Choose a file.");
+    information.setText("Idle");}
 
 
 });
@@ -129,8 +129,10 @@ tabbedPan.getSelectionModel().selectedIndexProperty().addListener((observable, o
         if(xml.size()>0) {
             String selectedFile;
             try{
-                selectedFile = fileChooser.showOpenDialog(mainStage).getAbsolutePath();
+                selectedFile = fileChooser.showSaveDialog(mainStage).getAbsolutePath();
                 Files.write(Path.of(selectedFile), xml.get(CURRENT_TAB).getContent().getBytes());
+                xml.get(CURRENT_TAB).name=selectedFile;
+                tabbedPan.getTabs().get(CURRENT_TAB).setText(selectedFile);
                 xml.get(CURRENT_TAB).saving();
                 Indicator.setText("Saved successfully in : "+selectedFile+".");
 
