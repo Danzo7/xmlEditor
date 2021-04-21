@@ -44,7 +44,6 @@ public class MainWindow implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         TabContainer.setStyle("-fx-background-color:#212121;");
         Indicator.setText("Please Open a XML file : ");
-        try {             openDocument(null);} catch (IOException e) {             e.printStackTrace();         }
         System.out.println(TabContainer.getWidth()+" and "+TabContainer.getHeight());
 
 tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
