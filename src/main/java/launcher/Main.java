@@ -24,7 +24,9 @@ public static Stage mainStage;
 public void init() throws IOException {
      fileChooser= new FileChooser();
     fileChooser.getExtensionFilters().setAll(
-            new FileChooser.ExtensionFilter("XML Files", "*.xml")
+            new FileChooser.ExtensionFilter("XML Files", "*.xml"),
+            new FileChooser.ExtensionFilter("DTD Files", "*.dtd"),
+            new FileChooser.ExtensionFilter("XSD Files", "*.xsd")
     );
 
     }

@@ -19,19 +19,39 @@ import java.util.regex.Pattern;
 
 
 public class XMLWorker {
-    public static int TYPE_XSD=1,TYPE_DTD=0,TYPE_AUTO=3;
+    public boolean isSaved=true;
+    public static int TYPE_DTD=0;
+    public static int TYPE_AUTO=3;
+    private String fileType="";
     static String skips="([\\s\\n\\r])*";
     public String unformattedTag ="thisIsAWayToPreventSomethingDontAskQuestionsOk", unformattedAttribute ="thisIsAWayToPreventSomethingDontAskQuestionsOk", invalidAttribute ="thisIsAWayToPreventSomethingDontAskQuestionsOk", invalidTag ="thisIsAWayToPreventSomethingDontAskQuestionsOk";
-    public int errorLines[]=new int[2];
-    boolean wellFormed=true,valid=true;
-    public String name,content,errorString;
-    public String errorMessages[]=new String[2];
+    public int[] errorLines =new int[2];
+    boolean wellFormed=true,valid=true,noXmlValidator=true;
+    public String name,errorString;
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        isSaved=false;
+        this.content = content;
+    }
+    public void saving(){
+        isSaved=true;
+    }
+
+    private String content;
+    public String[] errorMessages =new String[2];
     public String infoString="";
     InputStream inputs;
     public XMLWorker(String name) throws IOException {
         this.name=name;
         inputs=new FileInputStream(name);
         content = IOUtils.toString(inputs, StandardCharsets.UTF_8);
+        fileType = name.substring(name.lastIndexOf('.') + 1);
+        System.out.println("File extension is " + fileType);
+
     }
     void addSyntaxError(String Error){
         wellFormed=false;
@@ -42,14 +62,14 @@ public class XMLWorker {
         errorMessages[1]=Error;
     }
    void  resetErrorValue(){
-        wellFormed=true;
-        valid=true;
+       wellFormed=true;
+       valid=true;
        unformattedTag =invalidAttribute= unformattedAttribute = invalidTag ="thisIsAWayToPreventSomethingDontAskQuestionsOk";
        errorLines[0]=-1;errorLines[1]=-1;
        errorString="Good";
-        errorMessages[0]="wellformed";errorMessages[1]="valid";
+       errorMessages[0]="Everything is good.";errorMessages[1]="null";
     }
-    public boolean validate(int Type) throws IOException {
+    public void validate(int Type) throws IOException {
         File tempXmlFile = File.createTempFile("xmlEditor-", ".xml");
         tempXmlFile.deleteOnExit();
         FileWriter myWriter = new FileWriter(tempXmlFile);
@@ -74,13 +94,13 @@ public class XMLWorker {
             try {
                 Document validDocument = builder.build(tempXmlFile);
                 //XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
-                System.out.println("here");
             } catch (JDOMException e) {
-                System.out.println("ehere");
 
                 addSyntaxError(e.getMessage());
             }
-            try {
+            if(content.contains("<!DOCTYPE")||content.contains("xsi:schemaLocation")){
+                noXmlValidator=false;
+                try {
                 if (content.contains("<!DOCTYPE"))
                     builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
                 else if (content.contains("xsi:schemaLocation"))
@@ -90,69 +110,82 @@ public class XMLWorker {
 
             }
             catch (JDOMException e){
-
                 addValidationError(e.getMessage());
+            }}
+            else{
+                noXmlValidator=true;
             }
 
         }
         errorResolver();
-        return wellFormed || valid;
     }
 
     public  StyleSpans<Collection<String>> computeHighlighting2(String text) throws IOException {
-        validate(TYPE_AUTO);
-
-
-        Pattern ATTRIBUTES  = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
-        System.out.println(invalidAttribute);
-       // Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+ unformattedTag +"|"+invalidTag+"))|(?<ERRORATTR>"+ unformattedAttribute +"|"+ invalidAttribute +".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
-        Pattern xmlPattern = Pattern.compile("(?<ERRORFORM>(?<=<)"+unformattedTag+"|"+unformattedAttribute+".*?(?=>))|(?<ERRVALID>(?<=<)"+invalidTag+"|"+invalidAttribute+".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
-
-        int GROUP_ATTRIBUTE_NAME = 1;
-        int GROUP_EQUAL_SYMBOL = 2;
-        int GROUP_ATTRIBUTE_VALUE = 3;
-        int lastKwEnd = 0;
-
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+        if(fileType.equals("xml")) {
+      validate(TYPE_AUTO);
+      Pattern ATTRIBUTES = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
+      // Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+ unformattedTag +"|"+invalidTag+"))|(?<ERRORATTR>"+ unformattedAttribute +"|"+ invalidAttribute +".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
+      Pattern xmlPattern = Pattern.compile("(?<ERRORFORM>(?<=<)" + unformattedTag + "|" + unformattedAttribute + ".*?(?=>))|(?<ERRVALID>(?<=<)" + invalidTag + "|" + invalidAttribute + ".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)" + skips + "\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*" + skips + "=" + skips + "\"" + skips + "\\w*" + skips + "\")|(?<BRACKET>[<,>])");
 
-        Matcher matcher = xmlPattern.matcher(text);
+      int GROUP_ATTRIBUTE_NAME = 1;
+      int GROUP_EQUAL_SYMBOL = 2;
+      int GROUP_ATTRIBUTE_VALUE = 3;
+      int lastKwEnd = 0;
+      Matcher matcher = xmlPattern.matcher(text);
+      while (matcher.find()) {
+          String styleClass =
+                  matcher.group("ERRORFORM") != null ? "error-form" :
+                          matcher.group("ERRVALID") != null ? "error-valid" :
+                                  matcher.group("DECLARATION") != null ? "declaration" :
+                                          matcher.group("BRACKET") != null ? "bracket" :
+                                                  matcher.group("ATTR") != null ? "ATTR" :
+                                                          matcher.group("STAG") != null ? "start-tag" :
+                                                                  matcher.group("ETAG") != null ? "end-tag" :
+                                                                          matcher.group("DATA") != null ? "data" :
+                                                                                  matcher.group("BRACKET") != null ? "bracket" :
+                                                                                          null; /* never happens */
+          assert styleClass != null;
+          spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
 
-        while(matcher.find()) {
-            String styleClass =
-                    matcher.group("ERRORFORM") != null ? "error-form" :
-                            matcher.group("ERRVALID") != null ? "error-valid" :
-                                    matcher.group("DECLARATION") != null ? "declaration" :
-                                            matcher.group("BRACKET") != null ? "bracket" :
-                                                    matcher.group("ATTR") != null ? "ATTR" :
-                                                            matcher.group("STAG") != null ? "start-tag" :
-                                                                    matcher.group("ETAG") != null ? "end-tag" :
-                                                                            matcher.group("DATA") != null ? "data" :
-                                                                                    matcher.group("BRACKET") != null ? "bracket" :
-                                                                                            null; /* never happens */ assert styleClass != null;
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
+          if (styleClass.equals("ATTR")) {
+              String attributesText = matcher.group("ATTR");
+              lastKwEnd = 0;
+              Matcher aMatcher = ATTRIBUTES.matcher(attributesText);
+              while (aMatcher.find()) {
+                  spansBuilder.add(Collections.emptyList(), aMatcher.start() - lastKwEnd);
+                  spansBuilder.add(Collections.singleton("attribute"), aMatcher.end(GROUP_ATTRIBUTE_NAME) - aMatcher.start(GROUP_ATTRIBUTE_NAME));
+                  spansBuilder.add(Collections.singleton("equal"), aMatcher.end(GROUP_EQUAL_SYMBOL) - aMatcher.end(GROUP_ATTRIBUTE_NAME));
+                  spansBuilder.add(Collections.singleton("att_value"), aMatcher.end(GROUP_ATTRIBUTE_VALUE) - aMatcher.end(GROUP_EQUAL_SYMBOL));
+                  lastKwEnd = aMatcher.end();
+              }
+              if (attributesText.length() > lastKwEnd)
+                  spansBuilder.add(Collections.emptyList(), attributesText.length() - lastKwEnd);
+              lastKwEnd = matcher.end("ATTR");
+          } else {
+              spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
+              lastKwEnd = matcher.end();
+          }
+      }
 
-            if(styleClass.equals("ATTR")) {
-                String attributesText = matcher.group("ATTR");
-                lastKwEnd = 0;
-                Matcher aMatcher = ATTRIBUTES.matcher(attributesText);
-                while(aMatcher.find()) {
-                    spansBuilder.add(Collections.emptyList(), aMatcher.start() - lastKwEnd);
-                    spansBuilder.add(Collections.singleton("attribute"), aMatcher.end(GROUP_ATTRIBUTE_NAME) - aMatcher.start(GROUP_ATTRIBUTE_NAME));
-                    spansBuilder.add(Collections.singleton("equal"), aMatcher.end(GROUP_EQUAL_SYMBOL) - aMatcher.end(GROUP_ATTRIBUTE_NAME));
-                    spansBuilder.add(Collections.singleton("att_value"), aMatcher.end(GROUP_ATTRIBUTE_VALUE) - aMatcher.end(GROUP_EQUAL_SYMBOL));
-                    lastKwEnd = aMatcher.end();
-                }
-                if(attributesText.length() > lastKwEnd)
-                    spansBuilder.add(Collections.emptyList(), attributesText.length() - lastKwEnd);
-                lastKwEnd = matcher.end("ATTR");
-            }
+  }
 
-            else {
+
+        //dtdHL
+        if(fileType.equals("dtd")){
+            int lastKwEnd = 0;
+            Pattern dtdPattern = Pattern.compile("(?<ELEMENT>(?<=<)!\\w+)|(?<BRACKET><|>)");
+            Matcher matcher = dtdPattern.matcher(text);
+            while (matcher.find()) {
+                String styleClass =
+                        matcher.group("ELEMENT") != null ? "bracket" :
+                                matcher.group("BRACKET") != null ? "bracket" :null;
+                spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
                 spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
                 lastKwEnd = matcher.end();
             }
-        }
 
+        }
         return spansBuilder.create();
 
     }
@@ -170,8 +203,8 @@ public class XMLWorker {
 
         Matcher matcher=null;
         errorString=(errorMessages[1].equals("null") ?errorFormat(errorMessages[0]):errorFormat(errorMessages[1]));
-        infoString="F: "+(wellFormed?"OK":"NO")+" V: "+(valid?"OK":"NO");
-        System.out.println(errorMessages[0]);
+        infoString="F: "+(wellFormed?"OK":"NO")+" V: "+(noXmlValidator?"unset":valid?"OK":"NO");
+        System.out.println(infoString);
         if(!wellFormed){
              matcher = element_reg.matcher(errorMessages[0]);
             unformattedTag =matcher.find()?matcher.group(0): unformattedTag;

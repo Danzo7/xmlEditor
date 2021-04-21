@@ -39,6 +39,8 @@
                      </accelerator>
                   </MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="Close" mnemonicParsing="false" onAction="#closeTab" text="Close" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" onAction="#exitProgram" text="Exit" />
                </items>
             </Menu>
