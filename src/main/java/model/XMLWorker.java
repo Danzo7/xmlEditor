@@ -54,7 +54,6 @@ public class XMLWorker {
         content = content.replaceAll("[^\\p{ASCII}]", "");
 
         fileType = name.substring(name.lastIndexOf('.') + 1);
-        System.out.println("File extension is " + fileType);
 
     }
     void addSyntaxError(String Error){
@@ -78,7 +77,6 @@ public class XMLWorker {
         tempXmlFile.deleteOnExit();
         FileWriter myWriter = new FileWriter(tempXmlFile);
         myWriter.write(content);
-        System.out.println(content);
         myWriter.close();
         SAXBuilder builder;
         resetErrorValue();
@@ -196,7 +194,6 @@ public class XMLWorker {
 
     }
     String errorFormat(String Err){
-        System.out.println(Err);
         return Err.replaceAll("of document file.*\\.xml","");
     }
     public void errorResolver(){
@@ -210,7 +207,6 @@ public class XMLWorker {
         Matcher matcher=null;
         errorString=(errorMessages[1].equals("null") ?errorFormat(errorMessages[0]):errorFormat(errorMessages[1]));
         infoString="F: "+(wellFormed?"OK":"NO")+" V: "+(noXmlValidator?"unset":valid?"OK":"NO");
-        System.out.println(infoString);
         if(!wellFormed){
              matcher = element_reg.matcher(errorMessages[0]);
             unformattedTag =matcher.find()?matcher.group(0): unformattedTag;

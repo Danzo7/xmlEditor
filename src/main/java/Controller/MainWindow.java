@@ -2,8 +2,6 @@ package Controller;
 
 import com.jfoenix.controls.JFXTabPane;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -12,13 +10,10 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.FileChooser;
 import model.XMLWorker;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -26,11 +21,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import static launcher.Main.*;
+import static launcher.Main.fileChooser;
+import static launcher.Main.mainStage;
 
 public class MainWindow implements Initializable {
 
-    public JFXTabPane tabpane;
+    public JFXTabPane tabbedPan;
     public AnchorPane TabContainer;
     public Label Indicator;
     public Label information;
@@ -43,17 +39,16 @@ public class MainWindow implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         TabContainer.setStyle("-fx-background-color:#212121;");
-        Indicator.setText("Please Open a XML file : ");
-        System.out.println(TabContainer.getWidth()+" and "+TabContainer.getHeight());
-
-tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+        Indicator.setText("Choose a file. ");
+        information.setText("IDLE");
+tabbedPan.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
    CURRENT_TAB= (int) newValue;
    if(CURRENT_TAB>=0) {
        information.setText(xml.get(CURRENT_TAB).infoString);
        Indicator.setText(xml.get(CURRENT_TAB).errorString);
    }
    else{
-       Indicator.setText("Please Open a XML file : ");
+       Indicator.setText("Choose a file. ");
     information.setText("IDLE");}
 
 
@@ -91,7 +86,7 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
 
 
 
-    public void openDocument(ActionEvent actionEvent) throws IOException {
+    public void openDocument() throws IOException {
         String selectedFile;
 
             try{
@@ -101,8 +96,8 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
                 tab.setText(xml.get(xml.size()-1).name);
                 BorderPane p =new BorderPane();
                 tab.setContent(p);
-                tabpane.getTabs().add(tab);
-                tabpane.getSelectionModel().select(tab);
+                tabbedPan.getTabs().add(tab);
+                tabbedPan.getSelectionModel().select(tab);
                 generateCodeArea(p,xml.get(CURRENT_TAB).getContent());
                 xml.get(CURRENT_TAB).isSaved=true;
 
@@ -114,10 +109,10 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
     }
 
 
-    public void newDocument(ActionEvent actionEvent) throws IOException {
+    public void newDocument() {
 
     }
-    public void saveDocument(ActionEvent actionEvent) throws IOException {
+    public void saveDocument() throws IOException {
         if(xml.size()>0) {
             if(xml.get(CURRENT_TAB).isSaved){
             Indicator.setText("Already saved.");
@@ -129,7 +124,7 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
             }
         }}
 
-    public void saveAsDocument(ActionEvent actionEvent) throws IOException {
+    public void saveAsDocument() throws IOException {
 
         if(xml.size()>0) {
             String selectedFile;
@@ -147,17 +142,17 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
         }
     }
 
-    public void exitProgram(ActionEvent actionEvent) {
+    public void exitProgram() {
         Platform.exit();
     }
 
-    public void undo(ActionEvent actionEvent) {
+    public void undo() {
     }
 
-    public void redo(Event event) {
+    public void redo() {
     }
 
-    public void cut(ActionEvent actionEvent) {
+    public void cut() {
         if(codeAreas.size()>0){
             ClipboardContent content = new ClipboardContent();
             content.putString(codeAreas.get(CURRENT_TAB).getSelectedText());
@@ -168,7 +163,7 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
         }
     }
 
-    public void copy(ActionEvent actionEvent) {
+    public void copy() {
         if(codeAreas.size()>0){
             ClipboardContent content = new ClipboardContent();
             content.putString(codeAreas.get(CURRENT_TAB).getSelectedText());
@@ -178,40 +173,34 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
 
     }
 
-    public void paste(ActionEvent actionEvent) {
+    public void paste() {
         if(codeAreas.size()>0){
             Clipboard clipboard = Clipboard.getSystemClipboard();
             codeAreas.get(CURRENT_TAB).replaceText(codeAreas.get(CURRENT_TAB).getSelection(),clipboard.getString());
         }
     }
 
-    public void selectAll(ActionEvent actionEvent) {
+    public void selectAll() {
     }
 
-    public void saveOutput(ActionEvent actionEvent) {
+    public void saveOutput() {
     }
 
-    public void showSettings(ActionEvent actionEvent) {
+    public void showSettings() {
     }
 
-    public void start(ActionEvent actionEvent) {
+    public void showOnlineReference() {
     }
 
-    public void stop(ActionEvent actionEvent) {
+    public void showAboutWindow() {
     }
 
-    public void showOnlineReference(ActionEvent actionEvent) {
-    }
-
-    public void showAboutWindow(ActionEvent actionEvent) {
-    }
-
-    public void closeTab(ActionEvent actionEvent) {
+    public void closeTab() {
         if(xml.size()>0){
             if(xml.get(CURRENT_TAB).isSaved){
                 xml.remove(CURRENT_TAB);
                 codeAreas.remove(CURRENT_TAB);
-                tabpane.getTabs().remove(CURRENT_TAB);
+                tabbedPan.getTabs().remove(CURRENT_TAB);
 
             }
             else{

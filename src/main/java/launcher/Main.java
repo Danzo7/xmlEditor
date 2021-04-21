@@ -1,7 +1,6 @@
 package launcher;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,7 +15,7 @@ public class Main extends Application {
 public static Stage mainStage;
     public static   FileChooser fileChooser=null;
 
-public void init() throws IOException {
+public void init() {
      fileChooser= new FileChooser();
     fileChooser.getExtensionFilters().setAll(
             new FileChooser.ExtensionFilter("XML Files", "*.xml"),
