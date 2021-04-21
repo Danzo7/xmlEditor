@@ -12,6 +12,7 @@ import org.jdom2.output.XMLOutputter;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
@@ -49,6 +50,9 @@ public class XMLWorker {
         this.name=name;
         inputs=new FileInputStream(name);
         content = IOUtils.toString(inputs, StandardCharsets.UTF_8);
+        content = Normalizer.normalize(content, Normalizer.Form.NFKD);
+        content = content.replaceAll("[^\\p{ASCII}]", "");
+
         fileType = name.substring(name.lastIndexOf('.') + 1);
         System.out.println("File extension is " + fileType);
 
@@ -74,6 +78,7 @@ public class XMLWorker {
         tempXmlFile.deleteOnExit();
         FileWriter myWriter = new FileWriter(tempXmlFile);
         myWriter.write(content);
+        System.out.println(content);
         myWriter.close();
         SAXBuilder builder;
         resetErrorValue();

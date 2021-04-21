@@ -12,14 +12,8 @@ import java.io.IOException;
 
 
 public class Main extends Application {
-public static double WIDTH=400,HEIGHT=400;
-    public static async sizeChanged=new async();
 public static Stage mainStage;
     public static   FileChooser fileChooser=null;
-    private static void setSize(double w,double h){
-        WIDTH=w;HEIGHT=h;
-        sizeChanged.dispatchEvent();
-    }
 
 public void init() throws IOException {
      fileChooser= new FileChooser();
@@ -40,14 +34,5 @@ public void init() throws IOException {
         primaryStage.setScene(scene);
         mainStage=primaryStage;
         primaryStage.show();
-     ;
-//
-        ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->
-                setSize( primaryStage.getWidth() , primaryStage.getHeight());
-
-        primaryStage.widthProperty().addListener(stageSizeListener);
-        primaryStage.heightProperty().addListener(stageSizeListener);
-
-
     }
 }

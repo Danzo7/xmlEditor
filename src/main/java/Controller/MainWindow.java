@@ -82,13 +82,6 @@ tabpane.getSelectionModel().selectedIndexProperty().addListener((observable, old
         container.setCenter(codeArea);
         Indicator.setText(xml.get(CURRENT_TAB).errorString);
         information.setText(xml.get(CURRENT_TAB).infoString);
-
-
-
-       sizeChanged.onReceive((event)->{
-
-
-        });
        codeAreas.add(codeArea);
     }
 
