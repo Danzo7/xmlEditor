@@ -70,7 +70,7 @@ public class XMLWorker {
        errorMessages[0]="Everything is good.";errorMessages[1]="null";
     }
     public void validate(int Type) throws IOException {
-        File tempXmlFile = File.createTempFile("xmlEditor-", ".xml");
+        File tempXmlFile = File.createTempFile("xmlEditor-", "."+fileType);
         tempXmlFile.deleteOnExit();
         FileWriter myWriter = new FileWriter(tempXmlFile);
         myWriter.write(content);
@@ -117,12 +117,13 @@ public class XMLWorker {
             }
 
         }
+        tempXmlFile.delete();
         errorResolver();
     }
 
     public  StyleSpans<Collection<String>> computeHighlighting2(String text) throws IOException {
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-        if(fileType.equals("xml")) {
+        if(fileType.equals("xml")||fileType.equals("xsd")) {
       validate(TYPE_AUTO);
       Pattern ATTRIBUTES = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
       // Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+ unformattedTag +"|"+invalidTag+"))|(?<ERRORATTR>"+ unformattedAttribute +"|"+ invalidAttribute +".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
