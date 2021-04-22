@@ -7,9 +7,6 @@ import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
@@ -23,12 +20,18 @@ public class XMLWorker {
     public boolean isSaved=true;
     public static int TYPE_DTD=0;
     public static int TYPE_AUTO=3;
-    private String fileType="";
+    private final String fileType;
     static String skips="([\\s\\n\\r])*";
     public String unformattedTag ="thisIsAWayToPreventSomethingDontAskQuestionsOk", unformattedAttribute ="thisIsAWayToPreventSomethingDontAskQuestionsOk", invalidAttribute ="thisIsAWayToPreventSomethingDontAskQuestionsOk", invalidTag ="thisIsAWayToPreventSomethingDontAskQuestionsOk";
     public int[] errorLines =new int[2];
-    boolean wellFormed=true,valid=true,noXmlValidator=true;
+    boolean wellFormed=true,valid=true;
+    public boolean noXmlValidator=true;
     public String name,errorString;
+
+    private String content;
+    public String[] errorMessages =new String[2];
+    public String infoString="";
+    InputStream inputs;
 
     public String getContent() {
         return content;
@@ -42,10 +45,6 @@ public class XMLWorker {
         isSaved=true;
     }
 
-    private String content;
-    public String[] errorMessages =new String[2];
-    public String infoString="";
-    InputStream inputs;
     public XMLWorker(String name) throws IOException {
         this.name=name;
         inputs=new FileInputStream(name);
@@ -85,9 +84,9 @@ public class XMLWorker {
               if (Type == TYPE_DTD)
                   builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
               else
-                  builder = new SAXBuilder(XMLReaders.XSDVALIDATING);
+              builder = new SAXBuilder(XMLReaders.XSDVALIDATING);
               Document validDocument = builder.build(tempXmlFile);
-              XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+              //XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
           } catch (JDOMException | IOException e) {
               addValidationError(e.getMessage());
           }
@@ -98,7 +97,6 @@ public class XMLWorker {
                 Document validDocument = builder.build(tempXmlFile);
                 //XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
             } catch (JDOMException e) {
-
                 addSyntaxError(e.getMessage());
             }
             if(content.contains("<!DOCTYPE")||content.contains("xsi:schemaLocation")){
@@ -110,8 +108,7 @@ public class XMLWorker {
                     builder = new SAXBuilder(XMLReaders.XSDVALIDATING);
                 Document validDocument = builder.build(tempXmlFile);
                 //XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
-
-            }
+                }
             catch (JDOMException e){
                 addValidationError(e.getMessage());
             }}
@@ -190,6 +187,7 @@ public class XMLWorker {
             }
 
         }
+        spansBuilder.add(Collections.emptyList(),0);
         return spansBuilder.create();
 
     }
@@ -203,8 +201,7 @@ public class XMLWorker {
         Pattern tagValid = Pattern.compile("((?<=(type \"))\\w*(?=\" is incomplete))|((?<=(type \\\"))\\w*(?=\\\"))");
         Pattern validAttribute = Pattern.compile("(?<=((Attribute|Attribute name) \"))\\w*(?=\")");
         Pattern attr_Err = Pattern.compile("(?<=((Attribute name) \"))\\w*(?=\")");
-
-        Matcher matcher=null;
+        Matcher matcher;
         errorString=(errorMessages[1].equals("null") ?errorFormat(errorMessages[0]):errorFormat(errorMessages[1]));
         infoString="F: "+(wellFormed?"OK":"NO")+" V: "+(noXmlValidator?"unset":valid?"OK":"NO");
         if(!wellFormed){
@@ -214,26 +211,15 @@ public class XMLWorker {
             unformattedAttribute =matcher.find()?matcher.group(0):unformattedAttribute;
             matcher = line_reg.matcher(errorMessages[1]);
             errorLines[0]= matcher.find()?Integer.parseInt(matcher.group(0)):-1;
-
         }
         if(!valid){
-
             matcher = tagValid.matcher(errorMessages[1]);
-
             invalidTag =matcher.find()?matcher.group(0): invalidTag;
             matcher = line_reg.matcher(errorMessages[1]);
             errorLines[1]= matcher.find()?Integer.parseInt(matcher.group(0)):-1;
             matcher = validAttribute.matcher(errorMessages[1]);
             invalidAttribute = matcher.find() ? matcher.group(0) : invalidAttribute;
-
         }
-
-
-
-
-
-
-
     }
 
 }

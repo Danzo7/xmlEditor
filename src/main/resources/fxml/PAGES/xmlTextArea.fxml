@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXTabPane?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.input.KeyCodeCombination?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
 
 <AnchorPane prefHeight="600.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MainWindow">
    <children>
@@ -46,13 +41,6 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
                <items>
-                  <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" onAction="#undo" onMenuValidation="#redo" text="Undo">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                     </accelerator>
-                  </MenuItem>
-                  <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" onAction="#redo" text="Redo" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="cutMenuItem" mnemonicParsing="false" onAction="#cut" text="Cut">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="X" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -69,28 +57,8 @@
                      </accelerator>
                   </MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#selectAll" text="Select all">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                     </accelerator>
-                  </MenuItem>
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="saveOutputMenuItem" mnemonicParsing="false" onAction="#saveOutput" text="Save output..." />
-                  <MenuItem fx:id="settingsMenuItem" mnemonicParsing="false" onAction="#showSettings" text="Settings..." />
-               </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="?">
-               <items>
-                  <MenuItem fx:id="onlineReferenceMenuItem" mnemonicParsing="false" onAction="#showOnlineReference" text="Online reference">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="F1" control="UP" meta="UP" shift="UP" shortcut="ANY" />
-                     </accelerator>
-                  </MenuItem>
-                  <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" onAction="#showAboutWindow" text="About...">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="F12" control="UP" meta="UP" shift="UP" shortcut="ANY" />
-                     </accelerator>
-                  </MenuItem>
+                  <MenuItem fx:id="validate" mnemonicParsing="false" onAction="#validate" text="Validate xml" />
+                  <MenuItem fx:id="formedCheck" mnemonicParsing="false" onAction="#formedCheck" text="Check syntax" />
                </items>
             </Menu>
          </menus>

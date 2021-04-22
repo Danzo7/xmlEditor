@@ -2,6 +2,7 @@ package Controller;
 
 import com.jfoenix.controls.JFXTabPane;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -14,6 +15,7 @@ import model.XMLWorker;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -23,6 +25,7 @@ import java.util.ResourceBundle;
 
 import static launcher.Main.fileChooser;
 import static launcher.Main.mainStage;
+import static model.XMLWorker.TYPE_AUTO;
 
 public class MainWindow implements Initializable {
 
@@ -60,47 +63,29 @@ tabbedPan.getSelectionModel().selectedIndexProperty().addListener((observable, o
     void generateCodeArea(BorderPane container,String content) {
         CodeArea codeArea = new CodeArea();
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
-            codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
             xml.get(CURRENT_TAB).setContent(codeArea.getText());
             try {
                 codeArea.setStyleSpans(0, xml.get(CURRENT_TAB).computeHighlighting2(newText));
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+            catch (IOException e) {
+                // e.printStackTrace();
+                }
             Indicator.setText(xml.get(CURRENT_TAB).errorString);
             information.setText(xml.get(CURRENT_TAB).infoString);
-
-
         });
         codeArea.replaceText(0, 0, content);
         container.setCenter(codeArea);
         Indicator.setText(xml.get(CURRENT_TAB).errorString);
         information.setText(xml.get(CURRENT_TAB).infoString);
-       codeAreas.add(codeArea);
+        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+        codeAreas.add(codeArea);
     }
-
-
-
-
-
-
-
-
     public void openDocument() throws IOException {
         String selectedFile;
 
             try{
          selectedFile = fileChooser.showOpenDialog(mainStage).getAbsolutePath();
-                xml.add(new XMLWorker(selectedFile));
-                Tab tab = new Tab();
-                tab.setText(xml.get(xml.size()-1).name);
-                BorderPane p =new BorderPane();
-                tab.setContent(p);
-                tabbedPan.getTabs().add(tab);
-                tabbedPan.getSelectionModel().select(tab);
-                generateCodeArea(p,xml.get(CURRENT_TAB).getContent());
-                xml.get(CURRENT_TAB).isSaved=true;
-
+                createTabFromFile(selectedFile);
             }
             catch(NullPointerException e){
                 Indicator.setText("No file is selected.");
@@ -110,8 +95,31 @@ tabbedPan.getSelectionModel().selectedIndexProperty().addListener((observable, o
 
 
     public void newDocument() {
+        String selectedFile;
 
+        try{
+            selectedFile = fileChooser.showSaveDialog(mainStage).getAbsolutePath();
+            Files.write(Path.of(selectedFile), "".getBytes());
+            createTabFromFile(selectedFile);
+
+        }
+        catch(NullPointerException | IOException e){
+            Indicator.setText("No file is selected.");
+        }
     }
+
+    private void createTabFromFile(String selectedFile) throws IOException {
+        xml.add(new XMLWorker(selectedFile));
+        Tab tab = new Tab();
+        tab.setText(xml.get(xml.size()-1).name);
+        BorderPane p =new BorderPane();
+        tab.setContent(p);
+        tabbedPan.getTabs().add(tab);
+        tabbedPan.getSelectionModel().select(tab);
+        generateCodeArea(p,xml.get(CURRENT_TAB).getContent());
+        xml.get(CURRENT_TAB).isSaved=true;
+    }
+
     public void saveDocument() throws IOException {
         if(xml.size()>0) {
             if(xml.get(CURRENT_TAB).isSaved){
@@ -148,11 +156,6 @@ tabbedPan.getSelectionModel().selectedIndexProperty().addListener((observable, o
         Platform.exit();
     }
 
-    public void undo() {
-    }
-
-    public void redo() {
-    }
 
     public void cut() {
         if(codeAreas.size()>0){
@@ -182,20 +185,6 @@ tabbedPan.getSelectionModel().selectedIndexProperty().addListener((observable, o
         }
     }
 
-    public void selectAll() {
-    }
-
-    public void saveOutput() {
-    }
-
-    public void showSettings() {
-    }
-
-    public void showOnlineReference() {
-    }
-
-    public void showAboutWindow() {
-    }
 
     public void closeTab() {
         if(xml.size()>0){
@@ -208,5 +197,17 @@ tabbedPan.getSelectionModel().selectedIndexProperty().addListener((observable, o
             else{
                 Indicator.setText("File is not save please save before close.");
             }}
+    }
+
+    public void validate(ActionEvent actionEvent) throws IOException {
+        xml.get(CURRENT_TAB).validate(TYPE_AUTO);
+        Indicator.setText("Validation: "+(xml.get(CURRENT_TAB).noXmlValidator?"No validation method found!":xml.get(CURRENT_TAB).errorMessages[1].equals("null")?"Everything is good.":xml.get(CURRENT_TAB).errorMessages[1]));
+
+    }
+
+    public void formedCheck(ActionEvent actionEvent) throws IOException {
+        xml.get(CURRENT_TAB).validate(TYPE_AUTO);
+        Indicator.setText("Form: "+xml.get(CURRENT_TAB).errorMessages[0]);
+
     }
 }
