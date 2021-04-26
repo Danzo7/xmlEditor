@@ -7,10 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.IOException;
-
-
 public class Main extends Application {
 public static Stage mainStage;
     public static   FileChooser fileChooser=null;

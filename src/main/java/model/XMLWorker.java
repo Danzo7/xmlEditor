@@ -135,7 +135,6 @@ public class XMLWorker {
       Pattern ATTRIBUTES = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
       // Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+ unformattedTag +"|"+invalidTag+"))|(?<ERRORATTR>"+ unformattedAttribute +"|"+ invalidAttribute +".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
       Pattern xmlPattern = Pattern.compile("(?<ERRVALID>(?<=<)("+invalidTag+skips+invalidAttribute+")|"+invalidTag+"|"+(!valid?mainElement:NullPlaceHolder)+".*?(?=>))|(?<ERRORFORM>(?<=<)("+unformattedTag+skips+unformattedAttribute+")|"+unformattedTag+".*?(?=>))|(?<MAINELEMENT>(?<=</?)"+mainElement+".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<STAG>(?<=</?)" + skips + "\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*" + skips + "=" + skips + "\"" + skips + "\\w*" + skips + "\")|(?<BRACKET></?|>)");
-            System.out.println("(?<ERRVALID>(?<=<)("+invalidTag+skips+invalidAttribute+")|"+invalidTag+".*?(?=>))|(?<ERRORFORM>(?<=<)("+unformattedTag+skips+unformattedAttribute+")|"+unformattedTag+".*?(?=>))|(?<MAINELEMENT>(?<=</)"+mainElement+".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)" + skips + "\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*" + skips + "=" + skips + "\"" + skips + "\\w*" + skips + "\")|(?<BRACKET>[<,>])");
       int GROUP_ATTRIBUTE_NAME = 1;
       int GROUP_EQUAL_SYMBOL = 2;
       int GROUP_ATTRIBUTE_VALUE = 3;
@@ -200,7 +199,6 @@ public class XMLWorker {
     }
     String errorFormat(String Err){
 
-        System.out.println(Err);
         return Err.replaceAll("of document file.*\\.xml","");
     }
     public void errorResolver(){

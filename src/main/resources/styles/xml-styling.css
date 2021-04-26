@@ -1,3 +1,6 @@
+@font-face {
+    src: url("/font/FiraCode-Retina.ttf");
+}
 .code-area .paragraph-box .text {
     -fx-font-size: 15px;
     -fx-fill: white;
@@ -9,7 +12,8 @@
 
 .code-area .paragraph-box{
     -fx-background-color: #212121;
-    -fx-font-family: "Fira Code SemiBold";
+    -fx-font-family:"Fira Code Retina";
+
 }
 .code-area .caret {
     -fx-stroke: white;
@@ -27,8 +31,7 @@
 }
 
 .label {
-    -fx-font-family: "Fira Code SemiBold";
-
+    -fx-font-family: "Fira Code Retina";
 }
 
 .scroll-bar:horizontal .track,
