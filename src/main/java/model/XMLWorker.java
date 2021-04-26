@@ -22,12 +22,13 @@ public class XMLWorker {
     public static int TYPE_AUTO=3;
     private final String fileType;
     static String skips="([\\s\\n\\r])*";
-    public String unformattedTag ="thisIsAWayToPreventSomethingDontAskQuestionsOk", unformattedAttribute ="thisIsAWayToPreventSomethingDontAskQuestionsOk", invalidAttribute ="thisIsAWayToPreventSomethingDontAskQuestionsOk", invalidTag ="thisIsAWayToPreventSomethingDontAskQuestionsOk";
+    static public String NullPlaceHolder="NULL/NULL/NULL";
+    public String unformattedTag =NullPlaceHolder, unformattedAttribute =NullPlaceHolder, invalidAttribute =NullPlaceHolder, invalidTag =NullPlaceHolder;
     public int[] errorLines =new int[2];
     boolean wellFormed=true,valid=true;
     public boolean noXmlValidator=true;
     public String name,errorString;
-
+ String mainElement="";
     private String content;
     public String[] errorMessages =new String[2];
     public String infoString="";
@@ -66,10 +67,11 @@ public class XMLWorker {
    void  resetErrorValue(){
        wellFormed=true;
        valid=true;
-       unformattedTag =invalidAttribute= unformattedAttribute = invalidTag ="thisIsAWayToPreventSomethingDontAskQuestionsOk";
+       unformattedTag =invalidAttribute= unformattedAttribute = invalidTag =NullPlaceHolder;
        errorLines[0]=-1;errorLines[1]=-1;
        errorString="Good";
-       errorMessages[0]="Everything is good.";errorMessages[1]="null";
+       errorMessages[0]="Everything is good.";errorMessages[1]=NullPlaceHolder;
+    mainElement=NullPlaceHolder;
     }
     public void validate(int Type) throws IOException {
         File tempXmlFile = File.createTempFile("xmlEditor-", "."+fileType);
@@ -102,8 +104,13 @@ public class XMLWorker {
             if(content.contains("<!DOCTYPE")||content.contains("xsi:schemaLocation")){
                 noXmlValidator=false;
                 try {
-                if (content.contains("<!DOCTYPE"))
+                if (content.contains("<!DOCTYPE")){
                     builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
+                    Pattern pattern = Pattern.compile("(?<ERRORFORM>(?<=<!DOCTYPE) (?<MAIN>\\w*)(.*?)(?=>))");
+                    Matcher matcher = pattern.matcher(content);
+
+                    mainElement=matcher.find()?matcher.group("MAIN"):NullPlaceHolder;
+                }
                 else if (content.contains("xsi:schemaLocation"))
                     builder = new SAXBuilder(XMLReaders.XSDVALIDATING);
                 Document validDocument = builder.build(tempXmlFile);
@@ -127,8 +134,8 @@ public class XMLWorker {
       validate(TYPE_AUTO);
       Pattern ATTRIBUTES = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
       // Pattern xmlPattern = Pattern.compile("(?<ERROR>(?<=<)("+ unformattedTag +"|"+invalidTag+"))|(?<ERRORATTR>"+ unformattedAttribute +"|"+ invalidAttribute +".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)"+skips+"\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*"+skips+"="+skips+"\""+skips+"\\w*"+skips+"\")|(?<BRACKET>[<,>])");
-      Pattern xmlPattern = Pattern.compile("(?<ERRORFORM>(?<=<)" + unformattedTag + "|" + unformattedAttribute + ".*?(?=>))|(?<ERRVALID>(?<=<)" + invalidTag + "|" + invalidAttribute + ".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)" + skips + "\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*" + skips + "=" + skips + "\"" + skips + "\\w*" + skips + "\")|(?<BRACKET>[<,>])");
-
+      Pattern xmlPattern = Pattern.compile("(?<ERRVALID>(?<=<)("+invalidTag+skips+invalidAttribute+")|"+invalidTag+"|"+(!valid?mainElement:NullPlaceHolder)+".*?(?=>))|(?<ERRORFORM>(?<=<)("+unformattedTag+skips+unformattedAttribute+")|"+unformattedTag+".*?(?=>))|(?<MAINELEMENT>(?<=</?)"+mainElement+".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<STAG>(?<=</?)" + skips + "\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*" + skips + "=" + skips + "\"" + skips + "\\w*" + skips + "\")|(?<BRACKET></?|>)");
+            System.out.println("(?<ERRVALID>(?<=<)("+invalidTag+skips+invalidAttribute+")|"+invalidTag+".*?(?=>))|(?<ERRORFORM>(?<=<)("+unformattedTag+skips+unformattedAttribute+")|"+unformattedTag+".*?(?=>))|(?<MAINELEMENT>(?<=</)"+mainElement+".*?(?=>))|(?<DECLARATION><\\?.*\\?>)|(?<ETAG>(?<=<)/\\w*)|(?<STAG>(?<=<)" + skips + "\\w*)|(?<DATA>(?<=>).+(?=<))|(?<ATTR>\\w*" + skips + "=" + skips + "\"" + skips + "\\w*" + skips + "\")|(?<BRACKET>[<,>])");
       int GROUP_ATTRIBUTE_NAME = 1;
       int GROUP_EQUAL_SYMBOL = 2;
       int GROUP_ATTRIBUTE_VALUE = 3;
@@ -139,10 +146,10 @@ public class XMLWorker {
                   matcher.group("ERRORFORM") != null ? "error-form" :
                           matcher.group("ERRVALID") != null ? "error-valid" :
                                   matcher.group("DECLARATION") != null ? "declaration" :
-                                          matcher.group("BRACKET") != null ? "bracket" :
+                                          matcher.group("MAINELEMENT") != null ? "greenEl" :
+                                                  matcher.group("BRACKET") != null ? "bracket" :
                                                   matcher.group("ATTR") != null ? "ATTR" :
                                                           matcher.group("STAG") != null ? "start-tag" :
-                                                                  matcher.group("ETAG") != null ? "end-tag" :
                                                                           matcher.group("DATA") != null ? "data" :
                                                                                   matcher.group("BRACKET") != null ? "bracket" :
                                                                                           null; /* never happens */
@@ -192,6 +199,8 @@ public class XMLWorker {
 
     }
     String errorFormat(String Err){
+
+        System.out.println(Err);
         return Err.replaceAll("of document file.*\\.xml","");
     }
     public void errorResolver(){
@@ -202,7 +211,7 @@ public class XMLWorker {
         Pattern validAttribute = Pattern.compile("(?<=((Attribute|Attribute name) \"))\\w*(?=\")");
         Pattern attr_Err = Pattern.compile("(?<=((Attribute name) \"))\\w*(?=\")");
         Matcher matcher;
-        errorString=(errorMessages[1].equals("null") ?errorFormat(errorMessages[0]):errorFormat(errorMessages[1]));
+        errorString=(errorMessages[1].equals(NullPlaceHolder) ?errorFormat(errorMessages[0]):errorFormat(errorMessages[1]));
         infoString="F: "+(wellFormed?"OK":"NO")+" V: "+(noXmlValidator?"unset":valid?"OK":"NO");
         if(!wellFormed){
              matcher = element_reg.matcher(errorMessages[0]);

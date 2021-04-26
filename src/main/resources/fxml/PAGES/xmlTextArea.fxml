@@ -73,14 +73,14 @@
          </children></AnchorPane>
       <SplitPane dividerPositions="0.5162447257383966" layoutY="571.0" prefWidth="950.0" style="-fx-background-color: #212121;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <items>
-           <Label fx:id="Indicator" contentDisplay="CENTER" layoutY="571.0" prefHeight="18.0" prefWidth="809.0" style="-fx-background-color: #212121; -fx-font-size: 12px;" text="Label" textFill="WHITE" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+           <Label fx:id="Indicator" contentDisplay="CENTER" layoutY="571.0" prefWidth="809.0" style="-fx-background-color: #212121; -fx-font-size: 12px;" text="Label" textFill="WHITE" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
               <opaqueInsets>
                  <Insets />
               </opaqueInsets>
               <padding>
                  <Insets left="10.0" />
               </padding>
-           </Label> <Label fx:id="information" layoutY="571.0" prefHeight="17.0" prefWidth="140.0" style="-fx-background-color: #212121; -fx-font-size: 12px;" text="Label" textAlignment="RIGHT" textFill="WHITE" textOverrun="CLIP" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+           </Label> <Label fx:id="information" layoutY="571.0" prefWidth="140.0" style="-fx-background-color: #212121; -fx-font-size: 12px;" text="Label" textAlignment="RIGHT" textFill="WHITE" textOverrun="CLIP" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
            <opaqueInsets>
               <Insets />
            </opaqueInsets>

@@ -6,12 +6,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import model.XMLWorker;
+import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
@@ -25,6 +27,7 @@ import java.util.ResourceBundle;
 
 import static launcher.Main.fileChooser;
 import static launcher.Main.mainStage;
+import static model.XMLWorker.NullPlaceHolder;
 import static model.XMLWorker.TYPE_AUTO;
 
 public class MainWindow implements Initializable {
@@ -62,6 +65,7 @@ tabbedPan.getSelectionModel().selectedIndexProperty().addListener((observable, o
 
     void generateCodeArea(BorderPane container,String content) {
         CodeArea codeArea = new CodeArea();
+
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
             xml.get(CURRENT_TAB).setContent(codeArea.getText());
             try {
@@ -74,7 +78,8 @@ tabbedPan.getSelectionModel().selectedIndexProperty().addListener((observable, o
             information.setText(xml.get(CURRENT_TAB).infoString);
         });
         codeArea.replaceText(0, 0, content);
-        container.setCenter(codeArea);
+        VirtualizedScrollPane<CodeArea> scroller = new VirtualizedScrollPane<>(codeArea);
+        container.setCenter(scroller);
         Indicator.setText(xml.get(CURRENT_TAB).errorString);
         information.setText(xml.get(CURRENT_TAB).infoString);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -200,14 +205,16 @@ tabbedPan.getSelectionModel().selectedIndexProperty().addListener((observable, o
     }
 
     public void validate(ActionEvent actionEvent) throws IOException {
-        xml.get(CURRENT_TAB).validate(TYPE_AUTO);
-        Indicator.setText("Validation: "+(xml.get(CURRENT_TAB).noXmlValidator?"No validation method found!":xml.get(CURRENT_TAB).errorMessages[1].equals("null")?"Everything is good.":xml.get(CURRENT_TAB).errorMessages[1]));
-
+        if(xml.size()>0) {
+            xml.get(CURRENT_TAB).validate(TYPE_AUTO);
+            Indicator.setText("Validation: " + (xml.get(CURRENT_TAB).noXmlValidator ? "No validation method found!" : xml.get(CURRENT_TAB).errorMessages[1].equals(NullPlaceHolder) ? "Everything is good." : xml.get(CURRENT_TAB).errorMessages[1]));
+        }
     }
 
     public void formedCheck(ActionEvent actionEvent) throws IOException {
-        xml.get(CURRENT_TAB).validate(TYPE_AUTO);
-        Indicator.setText("Form: "+xml.get(CURRENT_TAB).errorMessages[0]);
-
+        if(xml.size()>0) {
+            xml.get(CURRENT_TAB).validate(TYPE_AUTO);
+            Indicator.setText("Form: " + xml.get(CURRENT_TAB).errorMessages[0]);
+        }
     }
 }

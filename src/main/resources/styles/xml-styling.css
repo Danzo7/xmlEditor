@@ -3,31 +3,77 @@
     -fx-fill: white;
 
 }
+.jfx-tab-pane .depth-container .tab-header-area .tab-header-background {
+    -fx-background-color: #212121 ;
+}
+
 .code-area .paragraph-box{
-    -fx-background-color:#212121;
+    -fx-background-color: #212121;
     -fx-font-family: "Fira Code SemiBold";
 }
 .code-area .caret {
     -fx-stroke: white;
 }
 .code-area {
-    -fx-background-color: #1c1c1c;
+    -fx-background-color: #212121;
 
 }
 
 .code-area .label {
--fx-background-color:#121212;
--fx-text-fill:white;
--fx-text-alignment: center;
--fx-alignment:center;
+    -fx-background-color: #403f3f;
+    -fx-text-fill:white;
+    -fx-text-alignment: center;
+    -fx-alignment:center;
 }
-.code-area .paragraph-box .equal {
-    -fx-fill: gray;
-}
+
 .label {
     -fx-font-family: "Fira Code SemiBold";
 
 }
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color:#212121;
+    -fx-border-color:#212121;
+    -fx-background-radius: 0em;
+    -fx-border-radius:2em;
+}
+
+.scroll-bar:horizontal .increment-button ,
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color:transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0 0 10 0;
+
+}
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+
+    -fx-background-color:transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0 10 0 0;
+
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow
+{
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color:derive(black,90%);
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+
+}
+
+
+
+.code-area .paragraph-box .equal {
+    -fx-fill: gray;
+}
+
 .code-area .paragraph-box .declaration {
     -fx-fill: gray;
 }
@@ -47,8 +93,12 @@
 .code-area .paragraph-box .attribute {
     -fx-fill: #4a1d75;
 }
+
 .code-area .paragraph-box .att_value {
     -fx-fill: #054805;
+}
+.code-area .paragraph-box .greenEl {
+    -fx-fill: #71b300;
 }
 .code-area .paragraph-box .error-form {
     -fx-fill: #881919;
@@ -62,9 +112,7 @@
 .comment {
     -fx-fill: teal;
 }
-.jfx-tab-pane .depth-container .tab-header-area .tab-header-background {
--fx-background-color: #121212 ;
-}
+
 
 
 
