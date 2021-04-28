@@ -78,6 +78,8 @@ public class XMLWorker {
         tempXmlFile.deleteOnExit();
         FileWriter myWriter = new FileWriter(tempXmlFile);
         myWriter.write(content);
+//        Pattern Path = Pattern.compile("(?<=(<!DOCTYPE)).*SYSTEM \"(?<PATH>[^\"]*)\"(?=>)");
+
         myWriter.close();
         SAXBuilder builder;
         resetErrorValue();
@@ -98,10 +100,10 @@ public class XMLWorker {
             try {
                 Document validDocument = builder.build(tempXmlFile);
                 //XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
-            } catch (JDOMException e) {
+            } catch (JDOMException | IOException e) {
                 addSyntaxError(e.getMessage());
             }
-            if(content.contains("<!DOCTYPE")||content.contains("xsi:schemaLocation")){
+            if(content.contains("<!DOCTYPE")||content.contains("chemaLocation=\"")){
                 noXmlValidator=false;
                 try {
                 if (content.contains("<!DOCTYPE")){
@@ -111,12 +113,12 @@ public class XMLWorker {
 
                     mainElement=matcher.find()?matcher.group("MAIN"):NullPlaceHolder;
                 }
-                else if (content.contains("xsi:schemaLocation"))
+                else if (content.contains("chemaLocation=\""))
                     builder = new SAXBuilder(XMLReaders.XSDVALIDATING);
                 Document validDocument = builder.build(tempXmlFile);
                 //XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
                 }
-            catch (JDOMException e){
+            catch (JDOMException | IOException e){
                 addValidationError(e.getMessage());
             }}
             else{
